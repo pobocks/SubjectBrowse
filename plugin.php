@@ -1,7 +1,7 @@
 <?php
 /**
  * @version $Id$
- * @copyright William Mayo
+ * @copyright William Mayo 2011
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  * @package SubjectBrowse
  */
@@ -23,7 +23,6 @@ define('SUBJECT_BROWSE_DC_ID', $result[0]['id']);
 // Add plugin hooks.
 add_plugin_hook('install', 'subject_browse_install');
 add_plugin_hook('uninstall', 'subject_browse_uninstall');
-//add_plugin_hook('config', 'subject_browse_config');
 add_plugin_hook('define_routes', 'subject_browse_define_routes');
 
 // Add filters.
@@ -35,10 +34,6 @@ function subject_browse_install()
 }
 
 function subject_browse_uninstall()
-{
-}
-
-function subject_browse_config()
 {
 }
 
