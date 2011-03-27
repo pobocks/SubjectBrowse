@@ -45,8 +45,8 @@
                           if (preg_match('/\W|\d/',$first_char )){
                             $first_char = '#0-9';
                           }
-                          if ($current_header !== $first_char){
-                            $current_header = $first_char;
+                          if ($current_header !== strtoupper($first_char)){
+                            $current_header = strtoupper($first_char);
                             if ($current_header === '#0-9'){
                               echo "<h3 class='sb-subject-heading' id='number'>$current_header</h3>";
                             }
