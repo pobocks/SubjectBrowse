@@ -13,6 +13,7 @@
 </script>
 <?php
   $db = get_db();
+                    /*
   $select = "SELECT DISTINCT et.text
              FROM " . $db->ElementTexts ." et
              JOIN ". $db->Elements . " e
@@ -23,6 +24,11 @@
                   FROM " . $db->ElementSets . " es
                   WHERE es.name = 'Dublin Core')
              ORDER BY et.text";
+                    */
+             $select = "SELECT DISTINCT text
+                        FROM " . $db->ElementTexts . "
+                        WHERE element_id='" . get_option('subject_browse_DC_Subject_id') . "'
+                        ORDER BY text;";
              $result = $db->fetchAll($select);
 ?>
 	<div id="primary" class="subject-browse">
@@ -34,7 +40,7 @@
                 <div class="pagination sb-pagination" id="pagination-top"><ul class="pagination_list">
                       <!-- Alphabetical Helpers -->
                       <?php echo '<li class="pagination_range"><a href="#number">#0-9</a></li>';
-                            foreach(range('A','Z') as $i) {echo "<li class='pagination_range' style='float:none;'><a href='#$i'>$i</a></li>";}?>                      
+                            foreach(range('A','Z') as $i) {echo "<li class='pagination_range'><a href='#$i'>$i</a></li>";}?>                      
                                               </ul>
                                               </div>
                       <div id="sb-subject-headings">
@@ -45,8 +51,8 @@
                           if (preg_match('/\W|\d/',$first_char )){
                             $first_char = '#0-9';
                           }
-                          if ($current_header !== $first_char){
-                            $current_header = $first_char;
+                          if ($current_header !== strtoupper($first_char)){
+                            $current_header = strtoupper($first_char);
                             if ($current_header === '#0-9'){
                               echo "<h3 class='sb-subject-heading' id='number'>$current_header</h3>";
                             }
