@@ -13,18 +13,6 @@
 </script>
 <?php
   $db = get_db();
-                    /*
-  $select = "SELECT DISTINCT et.text
-             FROM " . $db->ElementTexts ." et
-             JOIN ". $db->Elements . " e
-             ON et.element_id = e.id
-             WHERE e.name = 'Subject'
-             AND e.element_set_id =
-                 (SELECT id
-                  FROM " . $db->ElementSets . " es
-                  WHERE es.name = 'Dublin Core')
-             ORDER BY et.text";
-                    */
              $select = "SELECT DISTINCT text
                         FROM " . $db->ElementTexts . "
                         WHERE element_id='" . get_option('subject_browse_DC_Subject_id') . "'
@@ -61,7 +49,7 @@
                             }
                           }
                           
-                          echo '<p class="sb-subject"><a href="' . uri('items/browse?search=&advanced[0][element_id]=' . SUBJECT_BROWSE_DC_ID . '&advanced[0][type]=contains&advanced[0][terms]='. urlencode($row['text']) .'&submit_search=Search') . '">' . $row['text'] . '</a></p>';
+                          echo '<p class="sb-subject"><a href="' . uri('items/browse?search=&advanced[0][element_id]=' . get_option('subject_browse_DC_Subject_id' . '&advanced[0][type]=contains&advanced[0][terms]='. urlencode($row['text']) .'&submit_search=Search') . '">' . $row['text'] . '</a></p>';
                         }
                         ?>
                         
