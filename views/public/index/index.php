@@ -19,12 +19,16 @@
   		<ul class="items-nav navigation" id="secondary-nav">
 			<?php echo public_nav_items(array('Browse All' => uri('items'), 'Browse by Tag' => uri('items/tags'), 'Browse by Collection' => uri('collections'))); ?>
 		</ul>
-                <div class="pagination sb-pagination" id="pagination-top"><ul class="pagination_list">
+                <?php if (get_option('subject_browse_alphabetical_skiplinks')){ ?>
+                  <div class="pagination sb-pagination" id="pagination-top"><ul class="pagination_list">
                       <!-- Alphabetical Helpers -->
-                      <?php echo '<li class="pagination_range"><a href="#number">#0-9</a></li>';
-                            foreach(range('A','Z') as $i) {echo "<li class='pagination_range'><a href='#$i'>$i</a></li>";}?>                      
-                                              </ul>
-                                              </div>
+                      <?php 
+                         echo '<li class="pagination_range"><a href="#number">#0-9</a></li>';
+                         foreach(range('A','Z') as $i) {echo "<li class='pagination_range'><a href='#$i'>$i</a></li>";}?>                      
+                    </ul>
+                  </div>
+                <?php } ?>
+                                              
                       <div id="sb-subject-headings">
                         <?php                           
                               $current_header = '';
@@ -35,11 +39,13 @@
                                 }
                                 if ($current_header !== strtoupper($first_char)){
                                   $current_header = strtoupper($first_char);
-                                  if ($current_header === '#0-9'){
-                                    echo "<h3 class='sb-subject-heading' id='number'>$current_header</h3>";
-                                  }
-                                  else {
-                                    echo "<h3 class='sb-subject-heading' id='$current_header'>$current_header</h3>";
+                                  if (get_option('subject_browse_headers')){
+                                    if ($current_header === '#0-9'){
+                                      echo "<h3 class='sb-subject-heading' id='number'>$current_header</h3>";  
+                                    }
+                                    else {
+                                      echo "<h3 class='sb-subject-heading' id='$current_header'>$current_header</h3>";  
+                                    }
                                   }
                                 }
                           
@@ -49,7 +55,7 @@
                         ?>
                         
                         </div>
-                        
+                      <?php if (get_option('subject_browse_alphabetical_skiplinks')){  ?>
                       <div class="pagination sb-pagination" id="pagination-bottom"><ul class="pagination_list">
                       <!-- Alphabetical Helpers -->
                       <?php echo '<li class="pagination_range"><a href="#number">#0-9</a></li>';
@@ -58,7 +64,7 @@
                       
                                               </ul>
                                               </div>
-		
+		<?php } ?>
 			
 	</div><!-- end primary -->
 	
