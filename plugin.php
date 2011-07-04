@@ -35,7 +35,7 @@ function subject_browse_install()
 function subject_browse_uninstall()
 {
   delete_option('subject_browse_DC_id');
-  delete_option('subject_browse_DC_Subect_id');
+  delete_option('subject_browse_DC_Subject_id');
 }
 
 function subject_browse_define_routes($router)
