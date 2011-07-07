@@ -13,9 +13,14 @@ define('SUBJECT_BROWSE_PAGE_PATH', 'items/subject-browse/');
 add_plugin_hook('install', 'subject_browse_install');
 add_plugin_hook('uninstall', 'subject_browse_uninstall');
 add_plugin_hook('define_routes', 'subject_browse_define_routes');
+add_plugin_hook('config', 'subject_browse_config');
+add_plugin_hook('config_form', 'subject_browse_config_form');
 
 // Add filters.
 add_filter('public_navigation_items', 'subject_browse_public_navigation_items');
+if (get_option('subject_browse_item_links')){
+    add_filter(array('Display', 'Item', 'Dublin Core', 'Subject'), 'subject_browse_item_links');
+  }
 
 function subject_browse_install()
 {
@@ -30,12 +35,19 @@ function subject_browse_install()
              WHERE name='Subject' AND element_set_id='" . get_option('subject_browse_DC_id') . "';";
   $result = $db->fetchAll($select);
   set_option('subject_browse_DC_Subject_id', $result[0]['id']);
+  set_option('subject_browse_alphabetical_skiplinks', 1);
+  set_option('subject_browse_headers', 1);
+  set_option('subject_browse_item_links', 1);
 }
 
 function subject_browse_uninstall()
 {
   delete_option('subject_browse_DC_id');
   delete_option('subject_browse_DC_Subject_id');
+  delete_option('subject_browse_DC_Subect_id');
+  delete_option('subject_browse_alphabetical_helpers');
+  delete_option('subject_browse_headers');
+  delete_option('subject_browse_item_links');
 }
 
 function subject_browse_define_routes($router)
@@ -49,9 +61,23 @@ function subject_browse_define_routes($router)
 	);
 }
 
+function subject_browse_config(){
+  set_option('subject_browse_alphabetical_skiplinks', $_POST['alphabetical_skiplinks']);
+  set_option('subject_browse_headers', $_POST['headers']);
+  set_option('subject_browse_item_links', $_POST['item_links']);
+}
+
+function subject_browse_config_form(){
+  include 'config_form.php';
+}
+
 function subject_browse_public_navigation_items($nav)
 {
-  $nav['Browse by Subject'] = uri('items/subject-browse');
+  $nav['Browse by Subject'] = uri(SUBJECT_BROWSE_PAGE_PATH);
   return $nav;
 }
 
+function subject_browse_item_links($subject){
+  $subject = '<a href="' . uri('items/browse?search=&advanced[0][element_id]=' . get_option('subject_browse_DC_Subject_id') . '&advanced[0][type]=contains&advanced[0][terms]=' . urlencode(html_entity_decode($subject)) . '&submit_search=Search') . '">' . $subject . '</a>';
+  return $subject;
+}
