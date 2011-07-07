@@ -18,7 +18,9 @@ add_plugin_hook('config_form', 'subject_browse_config_form');
 
 // Add filters.
 add_filter('public_navigation_items', 'subject_browse_public_navigation_items');
-add_filter(array('Display', 'Item', 'Dublin Core', 'Subject'), 'subject_browse_item_links');
+if (get_option('subject_browse_item_links')){
+    add_filter(array('Display', 'Item', 'Dublin Core', 'Subject'), 'subject_browse_item_links');
+  }
 
 function subject_browse_install()
 {
@@ -35,6 +37,7 @@ function subject_browse_install()
   set_option('subject_browse_DC_Subject_id', $result[0]['id']);
   set_option('subject_browse_alphabetical_skiplinks', 1);
   set_option('subject_browse_headers', 1);
+  set_option('subject_browse_item_links', 1);
 }
 
 function subject_browse_uninstall()
@@ -43,6 +46,7 @@ function subject_browse_uninstall()
   delete_option('subject_browse_DC_Subect_id');
   delete_option('subject_browse_alphabetical_helpers');
   delete_option('subject_browse_headers');
+  delete_option('subject_browse_item_links');
 }
 
 function subject_browse_define_routes($router)
@@ -59,6 +63,7 @@ function subject_browse_define_routes($router)
 function subject_browse_config(){
   set_option('subject_browse_alphabetical_skiplinks', $_POST['alphabetical_skiplinks']);
   set_option('subject_browse_headers', $_POST['headers']);
+  set_option('subject_browse_item_links', $_POST['item_links']);
 }
 
 function subject_browse_config_form(){
