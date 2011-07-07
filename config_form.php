@@ -20,7 +20,7 @@
     ?>
 <div class="field">
   <label for="item_links">Add Links in Item pages:</label>
-   <?php if (get_option('subject_browse_headers')){
+   <?php if (get_option('subject_browse_item_links')){
            echo checkbox(array('name'=> 'item_links', 'id' => 'item_links', 'value' => 1), true);
          }
          else {
