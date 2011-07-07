@@ -18,6 +18,7 @@ add_plugin_hook('config_form', 'subject_browse_config_form');
 
 // Add filters.
 add_filter('public_navigation_items', 'subject_browse_public_navigation_items');
+add_filter(array('Display', 'Item', 'Dublin Core', 'Subject'), 'subject_browse_item_links');
 
 function subject_browse_install()
 {
@@ -68,4 +69,9 @@ function subject_browse_public_navigation_items($nav)
 {
   $nav['Browse by Subject'] = uri(SUBJECT_BROWSE_PAGE_PATH);
   return $nav;
+}
+
+function subject_browse_item_links($subject){
+  $subject = '<a href="' . uri('items/browse?search=&advanced[0][element_id]=' . get_option('subject_browse_DC_Subject_id') . '&advanced[0][type]=contains&advanced[0][terms]=' . urlencode(html_entity_decode($subject)) . '&submit_search=Search') . '">' . $subject . '</a>';
+  return $subject;
 }
