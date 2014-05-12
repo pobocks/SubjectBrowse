@@ -2,10 +2,9 @@
 /**
  * Subject Browse
  *
- * Allows to serve an alphabetized page of links to searches for all subjects
- * of all items of an Omeka instance.
+ * Allows to serve an alphabetized and a hierarchical page of links to searches
+ * for all subjects of all items of an Omeka instance.
  *
- * @version $Id$
  * @copyright William Mayo 2011
  * @copyright Copyright Daniel Berthereau, 2014
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
@@ -18,7 +17,8 @@
  */
  class SubjectBrowsePlugin extends Omeka_Plugin_AbstractPlugin
 {
-    const SUBJECT_BROWSE_PAGE_PATH = 'items/subject-browse';
+    const SUBJECT_BROWSE_PATH_LIST = 'subjects/list';
+    const SUBJECT_BROWSE_PATH_TREE = 'subjects/tree';
 
     /**
      * @var array Hooks for the plugin.
@@ -43,10 +43,14 @@
      * @var array Options and their default values.
      */
     protected $_options = array(
+        'subject_browse_enable_list' => true,
         'subject_browse_DC_id' => 1,
         'subject_browse_DC_Subject_id' => 49,
         'subject_browse_alphabetical_skiplinks' => 1,
         'subject_browse_headers' => 1,
+        'subject_browse_enable_tree' => false,
+        'subject_browse_expanded_tree' => true,
+        'subject_browse_hierarchy' => '',
         'subject_browse_item_links' => 1,
     );
 
@@ -92,8 +96,9 @@
     public function hookConfig($args)
     {
         $post = $args['post'];
+        // Options are already cleaned via Zend.
         foreach ($post as $key => $value) {
-            set_option($key, (integer) (boolean) $value);
+            set_option($key, $value);
         }
     }
 
@@ -104,16 +109,7 @@
      */
     public function hookDefineRoutes($args)
     {
-        $router = $args['router'];
-        $router->addRoute(
-            'subject_browse_subjectbrowse',
-            new Zend_Controller_Router_Route(
-                 self::SUBJECT_BROWSE_PAGE_PATH,
-                 array(
-                    'module' => 'subject-browse',
-                    'controller' => 'index',
-                    'action' => 'index',
-        )));
+        $args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . '/routes.ini', 'routes'));
     }
 
     /**
@@ -123,10 +119,19 @@
      */
     public function filterPublicNavigationItems($nav)
     {
-        $nav['Browse by Subject'] = array(
-            'label'=>__('Browse by Subject'),
-            'uri' => url(self::SUBJECT_BROWSE_PAGE_PATH),
-        );
+        if (get_option('subject_browse_enable_list')) {
+            $nav['Browse by Subject'] = array(
+                'label'=>__('Browse by Subject'),
+                'uri' => url(self::SUBJECT_BROWSE_PATH_LIST),
+            );
+        }
+
+        if (get_option('subject_browse_enable_tree')) {
+            $nav['Hierarchy of Subjects'] = array(
+                'label'=>__('Hierarchy of Subjects'),
+                'uri' => url(self::SUBJECT_BROWSE_PATH_TREE),
+            );
+        }
 
         return $nav;
     }
@@ -142,7 +147,7 @@
     {
         if (get_option('subject_browse_item_links')) {
             $subject = sprintf('<a href="%s">%s</a>',
-                url(sprintf('items/browse?search=&advanced[0][element_id]=%s&advanced[0][type]=contains&advanced[0][terms]=%s&submit_search=Search',
+                url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
                     get_option('subject_browse_DC_Subject_id'),
                     urlencode(html_entity_decode($subject))
                 )),

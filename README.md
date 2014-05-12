@@ -5,7 +5,8 @@ About
 -----
 
 [Subject Browse] is a plugin for [Omeka] that allows to serve an alphabetized
-page of links to searches for all subjects of all items of an Omeka instance.
+page of links to searches for all subjects of all items of an Omeka instance,
+and/or an expandable hierarchical list of all subjects.
 
 It allows to transform subjects into links in item view too.
 
@@ -21,9 +22,30 @@ Then install it like any other Omeka plugin and follow the config instructions.
 Usage
 -----
 
-The plugin adds a secondary link "Browse by Subject" in the secondary navigation
-bar (http://www.example.com/items/subject-browse).
+The plugin adds secondary links in the secondary navigation bar:
+* "Browse by Subject" (http://www.example.com/subjects/a-to-z).
+* "Hierarchy of Subjects" (http://www.example.com/subjects/tree).
 
+For the tree view, you need to fill the config form with the hierarchical list
+of subjects, formatted like:
+```
+Europe
+- France
+- Germany
+- United Kingdom
+-- England
+-- Scotland
+-- Wales
+Asia
+- Japan
+```
+So, format is:
+- One subjet by line.
+- Each subject is preceded by zero, one or more "-" to indicate the hierarchy
+level.
+- Separate the "-" and the subject with a space.
+- A subject cannot begin with a "-" or a space.
+- Empty lines are not considered.
 
 Warning
 -------
@@ -60,6 +82,10 @@ this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+The plugin uses a jQuery library for the tree view, released under the [MIT]
+licence.
+
+
 Contact
 -------
 
@@ -75,6 +101,7 @@ Copyright
 
 * Copyright William Mayo, 2011
 * Copyright Daniel Berthereau, 2014
+* Copyright Philip Collins, 2013 [jQuery tree view]
 
 
 [Omeka]: https://omeka.org
@@ -82,5 +109,7 @@ Copyright
 [Subject Browse issues]: https://github.com/pobocks/SubjectBrowse/issues
 [Subject Browse (2.x)]: https://github.com/Daniel-KM/SubjectBrowse
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html "GNU/GPL v3"
+[MIT]: http://http://opensource.org/licenses/MIT
 [Wiliam David Mayo]: https://github.com/pobocks
 [Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
+[jQuery tree view]: https://github.com/collinsp/jquery-simplefolders
