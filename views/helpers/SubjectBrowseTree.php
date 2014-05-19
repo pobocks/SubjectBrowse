@@ -45,7 +45,7 @@ class SubjectBrowse_View_Helper_SubjectBrowseTree extends Zend_View_Helper_Abstr
         $linked = (boolean) (isset($options['linked']) ? $options['linked'] : true);
         $expanded = (boolean) (isset($options['expanded'])
             ? $options['expanded']
-            : get_option('subject_browse_expanded_tree'));
+            : get_option('subject_browse_expanded'));
 
         return array(
             'linked' => $linked,

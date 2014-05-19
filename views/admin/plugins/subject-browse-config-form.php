@@ -52,11 +52,11 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_expanded_tree"><?php echo __('Expand Tree'); ?></label>
+            <label for="subject_browse_expanded"><?php echo __('Expand Tree'); ?></label>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_expanded_tree', true,
-                array('checked' => (boolean) get_option('subject_browse_expanded_tree'))); ?>
+            <?php echo get_view()->formCheckbox('subject_browse_expanded', true,
+                array('checked' => (boolean) get_option('subject_browse_expanded'))); ?>
             <p class="explanation">
                 <?php echo __('Check this box to display the tree expanded.'); ?>
                 <?php echo __('This option can be overridden by the theme.'); ?>
@@ -80,20 +80,6 @@
             <p class="explanation">
                 <?php echo __('If any, write the hierarchy of all your subjects in order to display them in the "Hierarchy of Subjects" page.'); ?>
                 <?php echo __('Format is: one subjet by line, preceded by zero, one or more "-" to indicate the hierarchy level. Separate the "-" and the subject with a space. Empty lines are not considered.'); ?>
-            </p>
-        </div>
-    </div>
-</fieldset>
-<fieldset id="fieldset-subject-browse-links"><legend><?php echo __('Metadata Links'); ?></legend>
-    <div class="field">
-        <div class="two columns alpha">
-            <label for="subject_browse_item_links"><?php echo __('Add Links in Item pages'); ?></label>
-        </div>
-        <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_item_links', true,
-                array('checked' => (boolean) get_option('subject_browse_item_links'))); ?>
-            <p class="explanation">
-                <?php echo __('Makes subject links in item display pages clickable links.'); ?>
             </p>
         </div>
     </div>

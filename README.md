@@ -9,8 +9,6 @@ page of links to searches for all subjects of all items of an Omeka instance,
 or an expandable hierarchical list of all subjects. These pages can be displayed
 in any page via a helper.
 
-It allows to transform subjects into links in item view too.
-
 
 Installation
 ------------

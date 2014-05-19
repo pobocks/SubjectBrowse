@@ -25,6 +25,7 @@
      */
     protected $_hooks = array(
         'install',
+        'upgrade',
         'uninstall',
         'config_form',
         'config',
@@ -36,7 +37,6 @@
      */
     protected $_filters = array(
         'public_navigation_items',
-        'displayItemDublinCoreSubject' => array('Display', 'Item', 'Dublin Core', 'Subject'),
     );
 
     /**
@@ -44,12 +44,11 @@
      */
     protected $_options = array(
         'subject_browse_enable_list' => true,
-        'subject_browse_DC_id' => 1,
         'subject_browse_DC_Subject_id' => 49,
         'subject_browse_alphabetical_skiplinks' => 1,
         'subject_browse_headers' => 1,
         'subject_browse_enable_tree' => false,
-        'subject_browse_expanded_tree' => true,
+        'subject_browse_expanded' => true,
         'subject_browse_hierarchy' => '',
         'subject_browse_item_links' => 1,
     );
@@ -62,10 +61,25 @@
         // Get the 'id' key values for the Dublin Core element set and Subject
         // element. Currently only Subject is used.
         $element = $this->_db->getTable('Element')->findByElementSetNameAndElementName('Dublin Core', 'Subject');
-        $this->_options['subject_browse_DC_id'] = $element->element_set_id;
         $this->_options['subject_browse_DC_Subject_id'] = $element->id;
 
         $this->_installOptions();
+    }
+
+    /**
+     * Upgrades the plugin.
+     */
+    public function hookUpgrade($args)
+    {
+        $oldVersion = $args['old_version'];
+        $newVersion = $args['new_version'];
+
+        if (version_compare($oldVersion, '2.1', '<')) {
+            delete_option('subject_browse_DC_id');
+            delete_option('subject_browse_item_links');
+            set_option('subject_browse_expanded', get_option('subject_browse_expanded_tree'));
+            delete_option('subject_browse_expanded_tree');
+        }
     }
 
     /**
@@ -134,26 +148,5 @@
         }
 
         return $nav;
-    }
-
-    /**
-     * Filter for item links.
-     *
-     * This filter is used only if it is set in config form.
-     *
-     * @return nav
-     */
-    public function displayItemDublinCoreSubject($subject)
-    {
-        if (get_option('subject_browse_item_links')) {
-            $subject = sprintf('<a href="%s">%s</a>',
-                url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                    get_option('subject_browse_DC_Subject_id'),
-                    urlencode(html_entity_decode($subject))
-                )),
-                $subject
-            );
-        }
-        return $subject;
     }
 }
