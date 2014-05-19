@@ -6,7 +6,8 @@ About
 
 [Subject Browse] is a plugin for [Omeka] that allows to serve an alphabetized
 page of links to searches for all subjects of all items of an Omeka instance,
-and/or an expandable hierarchical list of all subjects.
+or an expandable hierarchical list of all subjects. These pages can be displayed
+in any page via a helper.
 
 It allows to transform subjects into links in item view too.
 
@@ -23,7 +24,7 @@ Usage
 -----
 
 The plugin adds secondary links in the secondary navigation bar:
-* "Browse by Subject" (http://www.example.com/subjects/a-to-z).
+* "Browse by Subject" (http://www.example.com/subjects/list).
 * "Hierarchy of Subjects" (http://www.example.com/subjects/tree).
 
 For the tree view, you need to fill the config form with the hierarchical list
@@ -46,6 +47,26 @@ level.
 - Separate the "-" and the subject with a space.
 - A subject cannot begin with a "-" or a space.
 - Empty lines are not considered.
+
+These contents can be displayed on any page via the helpers `subjectBrowseList()`
+and `subjectBrowseTree()`:
+For list view:
+```
+echo $this->subjectBrowseList(null, array(
+    'linked' => true,
+    'skiplinks_top' => true,
+    'headers' => true,
+    'skiplinks_bottom' => true,
+));
+```
+For tree view:
+```
+echo $this->subjectBrowseTree(null, array(
+    'linked' => true,
+    'expanded' => true,
+));
+```
+
 
 Warning
 -------

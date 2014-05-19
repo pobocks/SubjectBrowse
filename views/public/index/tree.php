@@ -1,9 +1,5 @@
 <?php
 $title = __('Hierarchy of Subjects');
-
-queue_css_file('jquery-simple-folders');
-queue_js_file('jquery-simple-folders');
-
 echo head(array(
     'title' => $title,
     'bodyclass' => 'subject-browse browse hierarchy',
@@ -13,14 +9,12 @@ echo head(array(
     <nav class="items-nav navigation secondary-nav">
         <?php echo public_nav_items(); ?>
     </nav>
-    <div id="sb-subject-headings">
-        <?php
-        if (count($subjects)) :
-            echo $this->treeList($subjects);
-        else :
-            echo '<p>' . __('There is no hierarchy of subjects.') . '</p>';
-        endif;
-        ?>
-    </div>
+    <?php
+    if (count($subjects)) :
+        echo $this->subjectBrowseTree($subjects);
+    else :
+        echo '<p>' . __('There is no hierarchy of subjects.') . '</p>';
+    endif;
+    ?>
 </div>
 <?php echo foot(); ?>

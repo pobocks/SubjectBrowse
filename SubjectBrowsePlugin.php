@@ -12,8 +12,8 @@
  */
 
 /**
- * The Tagging plugin.
- * @package Omeka\Plugins\Tagging
+ * The Subject Browse plugin.
+ * @package Omeka\Plugins\SubjectBrowse
  */
  class SubjectBrowsePlugin extends Omeka_Plugin_AbstractPlugin
 {
