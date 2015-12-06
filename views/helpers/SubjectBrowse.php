@@ -64,10 +64,12 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
      * @param array $options Options to display the subjects. They depend on the
      * key "mode" ("list" (default) or "tree"). Values are booleans:
      * - raw: Show subjects as raw text, not links (default to false)
+     * - strip: Remove html tags (default to true)
      * - skiplinks: Add the list of letters at top and bottom of the page
      * - headings: Add each letter as headers
      * For "tree"
      * - raw: Show subjects as raw text, not links (default to false)
+     * - strip: Remove html tags (default to true)
      * - expanded: Show tree as expanded (defaul to config)
      *
      * @return string Html list.
@@ -84,6 +86,14 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
             $subjects = $options['mode'] == 'tree'
                 ? $this->_getSubjectsTree()
                 : $this->_getSubjectsList();
+        }
+
+        if ($options['strip']) {
+            $subjects = array_map('strip_formatting', $subjects);
+            // List of subjects may need to be reordered after reformatting.
+            if ($options['mode'] == 'list') {
+                sort($subjects);
+            }
         }
 
         $html = $view->partial('common/subject-browse-' . $options['mode'] . '.php', array(
@@ -105,6 +115,7 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
         $cleanedOptions = array(
             'mode' => $mode,
             'raw' => isset($options['raw']) && $options['raw'],
+            'strip' => isset($options['strip']) ? (boolean) $options['strip'] : true,
         );
 
         switch ($mode) {

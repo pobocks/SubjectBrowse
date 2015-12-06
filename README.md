@@ -55,6 +55,7 @@ echo $this->subjectBrowse($subjects, array(
     'mode' => 'list',
     'skiplinks' => true,
     'headings' => true,
+    'strip' => true,
     'raw' => false,
 ));
 ```
@@ -64,6 +65,7 @@ For tree view:
 echo $this->subjectBrowse($subjects, array(
     'mode' => 'tree',
     'expanded' => true,
+    'strip' => true,
     'raw' => false,
 ));
 ```
