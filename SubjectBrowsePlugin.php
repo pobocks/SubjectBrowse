@@ -169,7 +169,7 @@
         }
 
         if (get_option('subject_browse_tree_enabled')) {
-            $nav[''] = array(
+            $nav[] = array(
                 'label'=>__('Subjects Tree'),
                 'uri' => url(self::SUBJECT_BROWSE_PATH_TREE),
             );
