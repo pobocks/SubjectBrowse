@@ -93,6 +93,7 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
             // List of subjects may need to be reordered after reformatting.
             if ($options['mode'] == 'list') {
                 sort($subjects);
+                $subjects = array_unique($subjects);
             }
         }
 
