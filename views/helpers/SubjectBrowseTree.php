@@ -13,60 +13,8 @@ class SubjectBrowse_View_Helper_SubjectBrowseTree extends Zend_View_Helper_Abstr
     /**
      * Display the tree of subjects.
      *
-     * @param string $subjects Subjects to show, if any, else default ones.
-     * Format of this string can be found in the _subjectsTree() method.
-     * @param array $options Options can be these booleans:
-     * - linked: Show subjects as links (default to true)
-     * - expanded: Show view as expanded (defaul to config)
-     *
-     * @return string Html tree.
-     */
-    public function subjectBrowseTree($subjects = null, array $options = array())
-    {
-        $this->_DC_Subject_id = (integer) get_option('subject_browse_DC_Subject_id');
-
-        $options = $this->_cleanOptions($options);
-
-        if (empty($subjects)) {
-            $subjects = $this->_getSubjectsTree();
-        }
-
-        $html = $this->_subjectsTree($subjects, $options);
-
-        return $html;
-    }
-
-    /**
-     * Get list of options.
-     */
-    protected function _cleanOptions($options)
-    {
-        // Get list of options.
-        $linked = (boolean) (isset($options['linked']) ? $options['linked'] : true);
-        $expanded = (boolean) (isset($options['expanded'])
-            ? $options['expanded']
-            : get_option('subject_browse_expanded'));
-
-        return array(
-            'linked' => $linked,
-            'expanded' => $expanded,
-        );
-    }
-
-    /**
-     * Get the dafault tree of subjects.
-     */
-    protected function _getSubjectsTree()
-    {
-        $subjects = get_option('subject_browse_hierarchy');
-        $subjects = array_filter(explode(PHP_EOL, $subjects));
-
-        return $subjects;
-    }
-
-    /**
-     * Convert a hierarchy string into html hierarchical lists in order to build
-     * a javascript interactive tree.
+     * Use the partial view to convert a hierarchy string into html hierarchical
+     * lists in order to build a javascript interactive tree.
      *
      * @uses http://www.jqueryscript.net/other/jQuery-Flat-Folder-Tree-Plugin-simplefolders.html
      *
@@ -109,77 +57,60 @@ class SubjectBrowse_View_Helper_SubjectBrowseTree extends Zend_View_Helper_Abstr
      * </ul>
      * ";
      *
-     * @param string $subjects
-     * @param boolean $options See subjectBrowse()
+     * @param string $subjects Subjects to show, if any, else default ones.
+     * Format of this string can be found in the _subjectsTree() method.
+     * @param array $options Options can be these booleans:
+     * - linked: Show subjects as links (default to true)
+     * - expanded: Show view as expanded (defaul to config)
      *
-     * @return string Html lists, the first list with the class "tree".
+     * @return string Html tree.
      */
-    protected function _subjectsTree($subjects, $options)
+    public function subjectBrowseTree($subjects = null, array $options = array())
     {
-        $html = '';
+        $view = $this->view;
 
-        if (count($subjects)) {
-            $html .= '<div id="sb-subject-headings">';
-            $html .= sprintf('<link href="%s" media="all" rel="stylesheet" type="text/css" />', css_src('jquery-simple-folders'));
-            $html .= js_tag('jquery-simple-folders');
+        $this->_DC_Subject_id = (integer) get_option('subject_browse_DC_Subject_id');
 
-            // Create the tree.
-            $html .= '<ul class="tree">';
-            $previous_level = 0;
-            foreach ($subjects as $key => $subject) {
-                $first = substr($subject, 0, 1);
-                $space = strpos($subject, ' ');
-                $level = ($first !== '-' || $space === false) ? 0 : $space;
-                $header = trim($level == 0 ? $subject : substr($subject, $space));
+        $options = $this->_cleanOptions($options);
 
-                // Close the previous line (done before, because next line is
-                // not known yet).
-                if ($key == 0) {
-                    // Nothing for the first level.
-                }
-                elseif ($level > $previous_level) {
-                    // Deeper level is always the next one.
-                }
-                // Higher level.
-                elseif ($level < $previous_level) {
-                    $html .= '</li>' . PHP_EOL . str_repeat('</ul></li>' . PHP_EOL, $previous_level - $level);
-                }
-                // First line, deeper or equal level.
-                else {
-                    $html .= '</li>' . PHP_EOL;
-                }
-
-                // Start the line with or without a new sub-list.
-                if ($level > $previous_level) {
-                    // Deeper level is always the next one.
-                    $html .= PHP_EOL . '<div class="expander' . ($options['expanded'] ? ' expanded' : '') . '"></div><ul' . ($options['expanded'] ? ' class="expanded"' : '') . '><li>';
-                }
-                else {
-                    $html .= '<li>';
-                }
-
-                // Get the line.
-                if ($options['linked']) {
-                    $html .= sprintf('<a href="%s">%s</a>',
-                        url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                            $this->_DC_Subject_id,
-                            urlencode($header)
-                        )),
-                        $header
-                    );
-                }
-                else {
-                    $html .= $header;
-                }
-                $previous_level = $level;
-            }
-            // Manage last liine.
-            $html .= '</li>' . PHP_EOL . str_repeat('</ul></li>' . PHP_EOL, $previous_level);
-            // Close the tree.
-            $html .= '</ul>';
-            $html .= '</div>';
+        if (empty($subjects)) {
+            $subjects = $this->_getSubjectsTree();
         }
 
+        $html = $view->partial('common/subject-browse-tree.php', array(
+            'dcSubjectId' => $this->_DC_Subject_id,
+            'subjects' => $subjects,
+            'options' => $options,
+        ));
+
         return $html;
+    }
+
+    /**
+     * Get list of options.
+     */
+    protected function _cleanOptions($options)
+    {
+        // Get list of options.
+        $linked = (boolean) (isset($options['linked']) ? $options['linked'] : true);
+        $expanded = (boolean) (isset($options['expanded'])
+            ? $options['expanded']
+            : get_option('subject_browse_expanded'));
+
+        return array(
+            'linked' => $linked,
+            'expanded' => $expanded,
+        );
+    }
+
+    /**
+     * Get the dafault tree of subjects.
+     */
+    protected function _getSubjectsTree()
+    {
+        $subjects = get_option('subject_browse_hierarchy');
+        $subjects = array_filter(explode(PHP_EOL, $subjects));
+
+        return $subjects;
     }
 }

@@ -25,6 +25,8 @@ class SubjectBrowse_View_Helper_SubjectBrowseList extends Zend_View_Helper_Abstr
      */
     public function subjectBrowseList($subjects = null, array $options = array())
     {
+        $view = $this->view;
+
         $this->_DC_Subject_id = (integer) get_option('subject_browse_DC_Subject_id');
 
         $options = $this->_cleanOptions($options);
@@ -33,7 +35,11 @@ class SubjectBrowse_View_Helper_SubjectBrowseList extends Zend_View_Helper_Abstr
             $subjects = $this->_getSubjectsList();
         }
 
-        $html = $this->_subjectsList($subjects, $options);
+        $html = $view->partial('common/subject-browse-list.php', array(
+            'dcSubjectId' => $this->_DC_Subject_id,
+            'subjects' => $subjects,
+            'options' => $options,
+        ));
 
         return $html;
     }
@@ -73,93 +79,11 @@ class SubjectBrowse_View_Helper_SubjectBrowseList extends Zend_View_Helper_Abstr
         $sql = "
             SELECT DISTINCT text
             FROM $db->ElementTexts
-            WHERE element_id = " . $this->_DC_Subject_id . "
+            WHERE element_id = {$this->_DC_Subject_id}
             ORDER BY text;
         ";
         $result = $db->fetchCol($sql);
 
         return $result;
-    }
-
-    /**
-     * Convert a list of subjects objects into a html list of subjects.
-     *
-     * @param array $subjects
-     * @param boolean $options See subjectBrowse()
-     *
-     * @return string Html lists, the first list with the class "tree".
-     */
-    protected function _subjectsList($subjects, $options)
-    {
-        $html = '';
-
-        if (count($subjects)) {
-             if ($options['skiplinks_top']) {
-                 $html .= '
-    <div class="pagination sb-pagination" id="pagination-top">
-        <ul class="pagination_list">
-            <li class="pagination_range"><a href="#number">#0-9</a></li>';
-            $pagination_list = '';
-            foreach (range('A', 'Z') as $i) {
-                $pagination_list .= sprintf('<li class="pagination_range"><a href="#%s">%s</a></li>', $i, $i);
-            }
-            $html .= $pagination_list;
-            $html .= '
-        </ul>
-    </div>' . PHP_EOL;
-             }
-
-            $html .= '<div id="sb-subject-headings">';
-            $current_header = '';
-            foreach ($subjects as $header) {
-                $first_char = substr($header, 0, 1);
-                if (preg_match('/\W|\d/', $first_char)) {
-                    $first_char = '#0-9';
-                }
-                if ($current_header !== strtoupper($first_char)) {
-                    $current_header = strtoupper($first_char);
-                    if ($options['headers']) {
-                        if ($current_header === '#0-9') {
-                            $html .= "<h3 class='sb-subject-heading' id='number'>$current_header</h3>";
-                        }
-                        else {
-                            $html .= "<h3 class='sb-subject-heading' id='$current_header'>$current_header</h3>";
-                        }
-                    }
-                }
-                // Get the line.
-                if ($options['linked']) {
-                    $html .= sprintf('<p class="sb-subject"><a href="%s">%s</a></p>',
-                        url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                            $this->_DC_Subject_id,
-                            urlencode($header)
-                        )),
-                        $header
-                    );
-                }
-                else {
-                    $html .= $header;
-                }
-            }
-
-             if ($options['skiplinks_bottom']) {
-                 $html .= PHP_EOL . '
-    <div class="pagination sb-pagination" id="pagination-bottom">
-        <ul class="pagination_list">
-            <li class="pagination_range"><a href="#number">#0-9</a></li>';
-            if (!isset($pagination_list)) {
-                $pagination_list = '';
-                foreach (range('A', 'Z') as $i) {
-                    $pagination_list .= sprintf('<li class="pagination_range"><a href="#%s">%s</a></li>', $i, $i);
-                }
-            }
-            $html .= $pagination_list;
-            $html .= '
-        </ul>
-    </div>' . PHP_EOL;
-             }
-        }
-
-        return $html;
     }
 }
