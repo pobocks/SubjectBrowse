@@ -2,13 +2,30 @@
 if (count($subjects)):
     // Prepare and display skip links.
     if ($options['skiplinks']):
+        // Get the list of headers.
+        $letters = array('number' => false) + array_fill_keys(range('A', 'Z'), false);
+        foreach ($subjects as $subject) {
+            $first_char = substr($subject, 0, 1);
+            if (preg_match('/\W|\d/', $first_char)) {
+                $letters['number'] = true;
+            }
+            else {
+                $letters[strtoupper($first_char)] = true;
+            }
+        }
         $pagination_list = '<ul class="pagination_list">';
-        $pagination_list .= '<li class="pagination_range"><a href="#number">#0-9</a></li>';
-        foreach (range('A', 'Z') as $letter):
-            $pagination_list .= sprintf('<li class="pagination_range"><a href="#%s">%s</a></li>', $letter, $letter);
+        foreach ($letters as $letter => $isSet):
+            $letterDisplay = $letter == 'number' ? '#0-9' : $letter;
+            if ($isSet) {
+                $pagination_list .= sprintf('<li class="pagination_range"><a href="#%s">%s</a></li>', $letter, $letterDisplay);
+            }
+            else {
+                $pagination_list .= sprintf('<li class="pagination_range"><span>%s</span></li>', $letterDisplay);
+            }
         endforeach;
         $pagination_list .= '</ul>';
     ?>
+<style>.sb-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}</style>
 <div class="pagination sb-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
 </div>
