@@ -25,7 +25,11 @@ if (count($subjects)):
         endforeach;
         $pagination_list .= '</ul>';
     ?>
-<style>.sb-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}</style>
+<style>
+.sb-pagination {float: none;}
+.sb-pagination ul {height: 3em;}
+.sb-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}
+</style>
 <div class="pagination sb-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
 </div>
