@@ -24,7 +24,7 @@ class SubjectBrowse_IndexController extends Omeka_Controller_AbstractActionContr
             $this->_list();
         }
         else {
-            $this->_forward('items/browse');
+            $this->forward('browse', 'items', 'default');
         }
     }
 
@@ -37,7 +37,7 @@ class SubjectBrowse_IndexController extends Omeka_Controller_AbstractActionContr
             $this->_tree();
         }
         else {
-            $this->_forward('items/browse');
+            $this->forward('browse', 'items', 'default');
         }
     }
 
