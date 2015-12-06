@@ -24,8 +24,10 @@ The plugin adds secondary links in the secondary navigation bar:
 * "Browse by Subject" (http://www.example.com/subjects/list).
 * "Hierarchy of Subjects" (http://www.example.com/subjects/tree).
 
-For the tree view, you need to fill the config form with the hierarchical list
-of subjects, formatted like:
+For the list view, the subjects are the standard "Dublin Core Subject".
+
+For the tree view, the subjects are set in the config form with the hierarchical
+list of subjects, formatted like:
 ```
 Europe
 - France
@@ -38,7 +40,7 @@ Asia
 - Japan
 ```
 
-So, format is:
+So, the format is the config page for the tree view is:
 - One subjet by line.
 - Each subject is preceded by zero, one or more "-" to indicate the hierarchy
 level.
@@ -46,26 +48,44 @@ level.
 - A subject cannot begin with a "-" or a space.
 - Empty lines are not considered.
 
-These contents can be displayed on any page via the helpers `subjectBrowseList()`
-and `subjectBrowseTree()`:
+These contents can be displayed on any page via the helper `subjectBrowse()`:
 
-For list view:
 ```
-echo $this->subjectBrowseList(null, array(
-    'linked' => true,
-    'skiplinks_top' => true,
-    'headers' => true,
-    'skiplinks_bottom' => true,
+echo $this->subjectBrowse($subjects, array(
+    'mode' => 'list',
+    'skiplinks' => true,
+    'headings' => true,
+    'raw' => false,
 ));
 ```
 
 For tree view:
 ```
-echo $this->subjectBrowseTree(null, array(
-    'linked' => true,
+echo $this->subjectBrowse($subjects, array(
+    'mode' => 'tree',
     'expanded' => true,
+    'raw' => false,
 ));
 ```
+
+All arguments are optional and the default ones are set in the config page, but
+they can be overridden in the theme. So a simple `echo $this->subjectBrowse();`
+is enough.
+
+The helper shortcode "subjects" can be used too, in particular in exhibits and
+in simple pages:
+
+```
+[subjects]
+[subjects mode=list]
+[subjects mode=list skiplinks=true headings=true raw=false]
+[subjects mode=tree]
+[subjects mode=tree expanded=true raw=false]
+```
+
+Arguments that are set are not set use the default values.
+
+The argument "subjects" allows to display only a delimited list of subjects.
 
 
 Warning

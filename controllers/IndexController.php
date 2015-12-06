@@ -20,7 +20,7 @@ class SubjectBrowse_IndexController extends Omeka_Controller_AbstractActionContr
      */
     public function listAction()
     {
-        if (get_option('subject_browse_enable_list')) {
+        if (get_option('subject_browse_list_enabled')) {
             $this->_list();
         }
         else {
@@ -33,7 +33,7 @@ class SubjectBrowse_IndexController extends Omeka_Controller_AbstractActionContr
      */
     public function treeAction()
     {
-        if (get_option('subject_browse_enable_tree')) {
+        if (get_option('subject_browse_tree_enabled')) {
             $this->_tree();
         }
         else {
@@ -65,7 +65,7 @@ class SubjectBrowse_IndexController extends Omeka_Controller_AbstractActionContr
      */
     protected function _tree()
     {
-        $subjects = get_option('subject_browse_hierarchy');
+        $subjects = get_option('subject_browse_tree_hierarchy');
         $subjects = array_filter(explode(PHP_EOL, $subjects));
 
         $this->view->subjects = $subjects;

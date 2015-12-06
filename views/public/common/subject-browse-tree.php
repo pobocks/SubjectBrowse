@@ -10,7 +10,7 @@
                 $first = substr($subject, 0, 1);
                 $space = strpos($subject, ' ');
                 $level = ($first !== '-' || $space === false) ? 0 : $space;
-                $header = trim($level == 0 ? $subject : substr($subject, $space));
+                $subject = trim($level == 0 ? $subject : substr($subject, $space));
 
                 // Close the previous line (done before, because next line is
                 // not known yet).
@@ -39,15 +39,15 @@
                     echo '<li>';
                 }
 
-                 if ($options['linked']):
+                if (empty($options['raw'])):
                     echo '<a href="'
                         . url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                            $dcSubjectId, urlencode($header)))
+                            $dcSubjectId, urlencode($subject)))
                         . '">'
-                        . $header
+                        . $subject
                         . '</a>';
                 else:
-                    echo $header;
+                    echo $subject;
                 endif;
 
                 $previous_level = $level;

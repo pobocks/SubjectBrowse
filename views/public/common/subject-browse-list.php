@@ -1,16 +1,14 @@
 <?php
 if (count($subjects)):
-    // Prepare top/bottom links.
-    if ($options['skiplinks_top'] || $options['skiplinks_bottom']):
+    // Prepare and display skip links.
+    if ($options['skiplinks']):
         $pagination_list = '<ul class="pagination_list">';
         $pagination_list .= '<li class="pagination_range"><a href="#number">#0-9</a></li>';
         foreach (range('A', 'Z') as $letter):
             $pagination_list .= sprintf('<li class="pagination_range"><a href="#%s">%s</a></li>', $letter, $letter);
         endforeach;
         $pagination_list .= '</ul>';
-    endif;
-
-    if ($options['skiplinks_top']): ?>
+    ?>
 <div class="pagination sb-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
 </div>
@@ -18,39 +16,39 @@ if (count($subjects)):
 
 <div id="sb-subject-headings">
     <?php
-    $current_header = '';
+    $current_heading = '';
     $current_id = '';
-    foreach ($subjects as $header):
+    foreach ($subjects as $subject):
         // Add the first character as header if wanted.
-        if ($options['headers']):
-            $first_char = substr($header, 0, 1);
+        if ($options['headings']):
+            $first_char = substr($subject, 0, 1);
             if (preg_match('/\W|\d/', $first_char)) {
                 $first_char = '#0-9';
             }
             $current_first_char = strtoupper($first_char);
-            if ($current_header !== $current_first_char):
-                $current_header = $current_first_char;
-                $current_id = $current_header === '#0-9' ? 'number' : $current_header; ?>
-    <h3 class="sb-subject-heading" id="<?php echo $current_id; ?>"><?php echo $current_header; ?></h3>
+            if ($current_heading !== $current_first_char):
+                $current_heading = $current_first_char;
+                $current_id = $current_heading === '#0-9' ? 'number' : $current_heading; ?>
+    <h3 class="sb-subject-heading" id="<?php echo $current_id; ?>"><?php echo $current_heading; ?></h3>
             <?php endif;
         endif; ?>
 
     <p class="sb-subject">
-        <?php if ($options['linked']):
+        <?php if (empty($options['raw'])):
             echo '<a href="'
                 . url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                    $dcSubjectId, urlencode($header)))
+                    $dcSubjectId, urlencode($subject)))
                 . '">'
-                . $header
+                . $subject
                 . '</a>';
         else:
-            echo $header;
+            echo $subject;
         endif; ?>
     </p>
     <?php endforeach; ?>
 </div>
 
-    <?php if ($options['skiplinks_bottom']): ?>
+    <?php if ($options['skiplinks']): ?>
 <div class="pagination sb-pagination" id="pagination-bottom">
     <?php echo $pagination_list; ?>
 </div>

@@ -11,7 +11,7 @@ echo head(array(
     </nav>
     <?php
     if (count($subjects)) :
-        echo $this->subjectBrowseTree($subjects);
+        echo $this->subjectBrowse($subjects, array('mode' => 'tree'));
     else :
         echo '<p>' . __('There is no hierarchy of subjects.') . '</p>';
     endif;

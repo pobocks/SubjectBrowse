@@ -1,12 +1,16 @@
 <fieldset id="fieldset-subject-browse-list"><legend><?php echo __('Subject Browse'); ?></legend>
+    <p>
+        <?php echo __('These options are the default values.'); ?>
+        <?php echo __('Most of them for list and for tree can be overridden in the theme.'); ?>
+    </p>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_enable_list',
-                __('Enable link')); ?>
+            <?php echo $this->formLabel('subject_browse_list_enabled',
+                __('Enable list view')); ?>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_enable_list', true,
-                array('checked' => (boolean) get_option('subject_browse_enable_list'))); ?>
+            <?php echo $this->formCheckbox('subject_browse_list_enabled', true,
+                array('checked' => (boolean) get_option('subject_browse_list_enabled'))); ?>
             <p class="explanation">
                 <?php echo __('Enable the page and display the link to the list view in the navigation bar.'); ?>
             </p>
@@ -14,28 +18,28 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_headers',
-                __('Print headings')); ?>
+            <?php echo $this->formLabel('subject_browse_list_skiplinks',
+                __('Print skip links')); ?>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_headers', true,
-                array('checked' => (boolean) get_option('subject_browse_headers'))); ?>
+            <?php echo $this->formCheckbox('subject_browse_list_skiplinks', true,
+                array('checked' => (boolean) get_option('subject_browse_list_skiplinks'))); ?>
             <p class="explanation">
-                <?php echo __('Print headers for each section (#0-9 and symbols, A, B, etc.)'); ?>
+                <?php echo __('Print skip links at the top and bottom of each page, which link to the alphabetical headers.'); ?>
+                <?php echo __('Note that if headers are turned off, skiplinks do not work.'); ?>
             </p>
         </div>
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_alphabetical_skiplinks',
-                __('Print skip links')); ?>
+            <?php echo $this->formLabel('subject_browse_list_headings',
+                __('Print headings')); ?>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_alphabetical_skiplinks', true,
-                array('checked' => (boolean) get_option('subject_browse_alphabetical_skiplinks'))); ?>
+            <?php echo $this->formCheckbox('subject_browse_list_headings', true,
+                array('checked' => (boolean) get_option('subject_browse_list_headings'))); ?>
             <p class="explanation">
-                <?php echo __('Print skip links at the top and bottom of each page, which link to the alphabetical headers.'); ?>
-                <?php echo __('Note that if headers are turned off, skiplinks do not work.'); ?>
+                <?php echo __('Print headers for each section (#0-9 and symbols, A, B, etc.)'); ?>
             </p>
         </div>
     </div>
@@ -43,12 +47,12 @@
 <fieldset id="fieldset-subject-browse-tree"><legend><?php echo __('Hierarchy of Subjects'); ?></legend>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_enable_tree',
-                __('Enable link')); ?>
+            <?php echo $this->formLabel('subject_browse_tree_enabled',
+                __('Enable tree view')); ?>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_enable_tree', true,
-                array('checked' => (boolean) get_option('subject_browse_enable_tree'))); ?>
+            <?php echo $this->formCheckbox('subject_browse_tree_enabled', true,
+                array('checked' => (boolean) get_option('subject_browse_tree_enabled'))); ?>
             <p class="explanation">
                 <?php echo __('Enable the page and display the link to the hierarchical view in the navigation bar.'); ?>
             </p>
@@ -56,12 +60,12 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_expanded',
+            <?php echo $this->formLabel('subject_browse_tree_expanded',
                 __('Expand tree')); ?>
         </div>
         <div class="inputs five columns omega">
-            <?php echo get_view()->formCheckbox('subject_browse_expanded', true,
-                array('checked' => (boolean) get_option('subject_browse_expanded'))); ?>
+            <?php echo $this->formCheckbox('subject_browse_tree_expanded', true,
+                array('checked' => (boolean) get_option('subject_browse_tree_expanded'))); ?>
             <p class="explanation">
                 <?php echo __('Check this box to display the tree expanded.'); ?>
                 <?php echo __('This option can be overridden by the theme.'); ?>
@@ -70,18 +74,20 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <?php echo $this->formLabel('subject_browse_hierarchy',
+            <?php echo $this->formLabel('subject_browse_tree_hierarchy',
                 __('Set the hierarchy of subjects')); ?>
         </div>
         <div class="inputs five columns omega">
            <div class='input-block'>
-                <?php echo get_view()->formTextarea(
-                    'subject_browse_hierarchy',
-                    get_option('subject_browse_hierarchy'),
+                <?php echo $this->formTextarea(
+                    'subject_browse_tree_hierarchy',
+                    get_option('subject_browse_tree_hierarchy'),
                     array(
                         'rows' => 20,
                         'cols' => 60,
                         'class' => array('textinput'),
+                        // The place holder can't use end of line, so a symbol
+                        // is used for it.
                         'placeholder' => '
 Europe ↵
 - France ↵

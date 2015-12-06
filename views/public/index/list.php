@@ -11,7 +11,7 @@ echo head(array(
     </nav>
     <?php
     if (count($subjects)) :
-        echo $this->subjectBrowseList($subjects);
+        echo $this->subjectBrowse($subjects, array('mode' => 'list'));
     else:
         echo '<p>' . __('There is no subjects.') . '</p>';
     endif;

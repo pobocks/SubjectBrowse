@@ -44,14 +44,13 @@
      * @var array Options and their default values.
      */
     protected $_options = array(
-        'subject_browse_enable_list' => true,
         'subject_browse_DC_Subject_id' => 49,
-        'subject_browse_alphabetical_skiplinks' => 1,
-        'subject_browse_headers' => 1,
-        'subject_browse_enable_tree' => false,
-        'subject_browse_expanded' => true,
-        'subject_browse_hierarchy' => '',
-        'subject_browse_item_links' => 1,
+        'subject_browse_list_enabled' => true,
+        'subject_browse_list_skiplinks' => 1,
+        'subject_browse_list_headings' => 1,
+        'subject_browse_tree_enabled' => false,
+        'subject_browse_tree_expanded' => true,
+        'subject_browse_tree_hierarchy' => '',
     );
 
     /**
@@ -60,6 +59,9 @@
     public function hookInitialize()
     {
         add_translation_source(dirname(__FILE__) . '/languages');
+        if (version_compare(OMEKA_VERSION, '2.2', '>=')) {
+            add_shortcode('subjects', array($this, 'shortcodeSubjects'));
+        }
     }
 
     /**
@@ -88,6 +90,22 @@
             delete_option('subject_browse_item_links');
             set_option('subject_browse_expanded', get_option('subject_browse_expanded_tree'));
             delete_option('subject_browse_expanded_tree');
+        }
+
+        if (version_compare($oldVersion, '2.2', '<')) {
+            delete_option('subject_browse_item_links');
+            set_option('subject_browse_list_enabled', get_option('subject_browse_enable_list'));
+            delete_option('subject_browse_enable_list');
+            set_option('subject_browse_list_skiplinks', get_option('subject_browse_alphabetical_skiplinks'));
+            delete_option('subject_browse_alphabetical_skiplinks');
+            set_option('subject_browse_list_headings', get_option('subject_browse_headers'));
+            delete_option('subject_browse_headers');
+            set_option('subject_browse_tree_enabled', get_option('subject_browse_enable_tree'));
+            delete_option('subject_browse_enable_tree');
+            set_option('subject_browse_tree_expanded', get_option('subject_browse_expanded'));
+            delete_option('subject_browse_expanded');
+            set_option('subject_browse_tree_hierarchy', get_option('subject_browse_hierarchy'));
+            delete_option('subject_browse_hierarchy');
         }
     }
 
@@ -142,14 +160,14 @@
      */
     public function filterPublicNavigationItems($nav)
     {
-        if (get_option('subject_browse_enable_list')) {
+        if (get_option('subject_browse_list_enabled')) {
             $nav['Browse by Subject'] = array(
                 'label'=>__('Browse by Subject'),
                 'uri' => url(self::SUBJECT_BROWSE_PATH_LIST),
             );
         }
 
-        if (get_option('subject_browse_enable_tree')) {
+        if (get_option('subject_browse_tree_enabled')) {
             $nav['Hierarchy of Subjects'] = array(
                 'label'=>__('Hierarchy of Subjects'),
                 'uri' => url(self::SUBJECT_BROWSE_PATH_TREE),
@@ -157,5 +175,31 @@
         }
 
         return $nav;
+    }
+
+    /**
+     * Shortcode for adding list or tree of subjects.
+     *
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
+    public function shortcodeSubjects($args, $view)
+    {
+        $args['view'] = $view;
+        $subjects = isset($args['subjects'])
+            ? array_filter(array_map('trim', explode(',', $args['subjects'])))
+            : array();
+        foreach ($args as &$arg) {
+            // Set true values.
+            if ($arg == 'true') {
+                $arg = true;
+            }
+            // Set false values.
+            elseif ($arg == 'false') {
+                $arg = false;
+            }
+        }
+        return $view->subjectBrowse($subjects, $args);
     }
 }
