@@ -37,6 +37,7 @@
      * @var array Filters for the plugin.
      */
     protected $_filters = array(
+        'public_navigation_main',
         'public_navigation_items',
     );
 
@@ -151,6 +152,30 @@
     public function hookDefineRoutes($args)
     {
         $args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . '/routes.ini', 'routes'));
+    }
+
+    /**
+     * Filter for public main navigation.
+     *
+     * @return nav
+     */
+    public function filterPublicNavigationMain($nav)
+    {
+        if (get_option('subject_browse_list_enabled')) {
+            $nav[] = array(
+                'label'=>__('Subjects List'),
+                'uri' => url(self::SUBJECT_BROWSE_PATH_LIST),
+            );
+        }
+
+        if (get_option('subject_browse_tree_enabled')) {
+            $nav[''] = array(
+                'label'=>__('Subjects Tree'),
+                'uri' => url(self::SUBJECT_BROWSE_PATH_TREE),
+            );
+        }
+
+        return $nav;
     }
 
     /**

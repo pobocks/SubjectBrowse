@@ -1,8 +1,9 @@
-<fieldset id="fieldset-subject-browse-list"><legend><?php echo __('Subject Browse'); ?></legend>
+<fieldset id="fieldset-subject-browse-general"><legend><?php echo __('Subject Browse'); ?></legend>
     <p>
-        <?php echo __('These options are the default values.'); ?>
-        <?php echo __('Most of them for list and for tree can be overridden in the theme.'); ?>
+        <?php echo __('Most of these options for list and for tree can be overridden in the theme.'); ?>
     </p>
+</fieldset>
+<fieldset id="fieldset-subject-browse-list"><legend><?php echo __('Subject Index'); ?></legend>
     <div class="field">
         <div class="two columns alpha">
             <?php echo $this->formLabel('subject_browse_list_enabled',
@@ -12,7 +13,8 @@
             <?php echo $this->formCheckbox('subject_browse_list_enabled', true,
                 array('checked' => (boolean) get_option('subject_browse_list_enabled'))); ?>
             <p class="explanation">
-                <?php echo __('Enable the page and display the link to the list view in the navigation bar.'); ?>
+                <?php echo __('Enable the page and display the link "%s" to the list view in the navigation bar.',
+                    '<a href="' . url(SubjectBrowsePlugin::SUBJECT_BROWSE_PATH_LIST) . '">' . url(SubjectBrowsePlugin::SUBJECT_BROWSE_PATH_LIST). '</a>'); ?>
             </p>
         </div>
     </div>
@@ -54,7 +56,8 @@
             <?php echo $this->formCheckbox('subject_browse_tree_enabled', true,
                 array('checked' => (boolean) get_option('subject_browse_tree_enabled'))); ?>
             <p class="explanation">
-                <?php echo __('Enable the page and display the link to the hierarchical view in the navigation bar.'); ?>
+                <?php echo __('Enable the page and display the link "%s" to the hierarchical view in the navigation bar.',
+                    '<a href="' . url(SubjectBrowsePlugin::SUBJECT_BROWSE_PATH_TREE) . '">' . url(SubjectBrowsePlugin::SUBJECT_BROWSE_PATH_TREE) . '</a>'); ?>
             </p>
         </div>
     </div>
