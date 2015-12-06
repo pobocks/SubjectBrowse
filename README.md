@@ -1,13 +1,12 @@
 Subject Browse (plugin for Omeka)
 =================================
 
-About
------
-
 [Subject Browse] is a plugin for [Omeka] that allows to serve an alphabetized
 page of links to searches for all subjects of all items of an Omeka instance,
 or an expandable hierarchical list of all subjects. These pages can be displayed
 in any page via a helper.
+
+It is available for Omeka 1.5 ([Subject Browse (1.x)]) and for Omeka 2 ([Subject Browse (2.x)]).
 
 
 Installation
@@ -38,6 +37,7 @@ Europe
 Asia
 - Japan
 ```
+
 So, format is:
 - One subjet by line.
 - Each subject is preceded by zero, one or more "-" to indicate the hierarchy
@@ -48,6 +48,7 @@ level.
 
 These contents can be displayed on any page via the helpers `subjectBrowseList()`
 and `subjectBrowseTree()`:
+
 For list view:
 ```
 echo $this->subjectBrowseList(null, array(
@@ -57,6 +58,7 @@ echo $this->subjectBrowseList(null, array(
     'skiplinks_bottom' => true,
 ));
 ```
+
 For tree view:
 ```
 echo $this->subjectBrowseTree(null, array(
@@ -71,14 +73,14 @@ Warning
 
 Use it at your own risk.
 
-It's always recommended to backup your files and database so you can roll back
-if needed.
+It's always recommended to backup your files and database regularly so you can
+roll back if needed.
 
 
 Troubleshooting
 ---------------
 
-See online issues on the [Subject Browse issues] page on GitHub.
+See online issues on the [plugin issues (2.x)] page on GitHub (or [plugin issues (1.x)]).
 
 
 License
@@ -109,26 +111,32 @@ Contact
 -------
 
 Current maintainers:
+
+* William Mayo (mail: <mayow@simmons.edu>, see [pobocks] on GitHub)
 * Daniel Berthereau (see [Daniel-KM] on GitHub, release [Subject Browse (2.x)])
 
-First version of this plugin has been built by [Wiliam David Mayo] ([Subject Browse]).
-Upgrade has been made for an anonymous project.
+
+First version of this plugin has been built by [Wiliam David Mayo]. Upgrade and
+improvements has been made for an anonymous project.
 
 
 Copyright
 ---------
 
 * Copyright William Mayo, 2011
-* Copyright Daniel Berthereau, 2014
-* Copyright Philip Collins, 2013 [jQuery tree view]
+* Copyright Daniel Berthereau, 2014-2015
+* Copyright Philip Collins, 2013 ([jQuery tree view])
 
 
 [Omeka]: https://omeka.org
 [Subject Browse]: https://github.com/pobocks/SubjectBrowse
-[Subject Browse issues]: https://github.com/pobocks/SubjectBrowse/issues
+[Subject Browse (1.x)]: https://github.com/pobocks/SubjectBrowse
 [Subject Browse (2.x)]: https://github.com/Daniel-KM/SubjectBrowse
+[plugin issues (1.x)]: https://github.com/pobocks/SubjectBrowse/issues
+[plugin issues (2.x)]: https://github.com/Daniel-KM/SubjectBrowse/issues
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html "GNU/GPL v3"
 [MIT]: http://http://opensource.org/licenses/MIT
+[pobocks]: https://github.com/pobocks
 [Wiliam David Mayo]: https://github.com/pobocks
 [Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
 [jQuery tree view]: https://github.com/collinsp/jquery-simplefolders
