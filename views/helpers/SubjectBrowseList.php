@@ -25,7 +25,7 @@ class SubjectBrowse_View_Helper_SubjectBrowseList extends Zend_View_Helper_Abstr
      */
     public function subjectBrowseList($subjects = null, array $options = array())
     {
-        $this->_DC_Subject_id = get_option('subject_browse_DC_Subject_id');
+        $this->_DC_Subject_id = (integer) get_option('subject_browse_DC_Subject_id');
 
         $options = $this->_cleanOptions($options);
 

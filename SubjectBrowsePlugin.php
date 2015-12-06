@@ -92,12 +92,11 @@
 
     /**
      * Shows plugin configuration page.
-     *
-     * @return void
      */
-    public function hookConfigForm()
+    public function hookConfigForm($args)
     {
-        echo get_view()->partial(
+        $view = $args['view'];
+        echo $view->partial(
             'plugins/subject-browse-config-form.php'
         );
     }
@@ -110,9 +109,10 @@
     public function hookConfig($args)
     {
         $post = $args['post'];
-        // Options are already cleaned via Zend.
-        foreach ($post as $key => $value) {
-            set_option($key, $value);
+        foreach ($this->_options as $optionKey => $optionValue) {
+            if (isset($post[$optionKey])) {
+                set_option($optionKey, $post[$optionKey]);
+            }
         }
     }
 

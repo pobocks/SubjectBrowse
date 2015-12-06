@@ -1,7 +1,8 @@
 <fieldset id="fieldset-subject-browse-list"><legend><?php echo __('Subject Browse'); ?></legend>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_enable_list"><?php echo __('Enable link'); ?></label>
+            <?php echo $this->formLabel('subject_browse_enable_list',
+                __('Enable link')); ?>
         </div>
         <div class="inputs five columns omega">
             <?php echo get_view()->formCheckbox('subject_browse_enable_list', true,
@@ -13,7 +14,8 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_headers"><?php echo __('Print headings'); ?></label>
+            <?php echo $this->formLabel('subject_browse_headers',
+                __('Print headings')); ?>
         </div>
         <div class="inputs five columns omega">
             <?php echo get_view()->formCheckbox('subject_browse_headers', true,
@@ -25,7 +27,8 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_alphabetical_skiplinks"><?php echo __('Print skip links'); ?></label>
+            <?php echo $this->formLabel('subject_browse_alphabetical_skiplinks',
+                __('Print skip links')); ?>
         </div>
         <div class="inputs five columns omega">
             <?php echo get_view()->formCheckbox('subject_browse_alphabetical_skiplinks', true,
@@ -40,7 +43,8 @@
 <fieldset id="fieldset-subject-browse-tree"><legend><?php echo __('Hierarchy of Subjects'); ?></legend>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_enable_tree"><?php echo __('Enable link'); ?></label>
+            <?php echo $this->formLabel('subject_browse_enable_tree',
+                __('Enable link')); ?>
         </div>
         <div class="inputs five columns omega">
             <?php echo get_view()->formCheckbox('subject_browse_enable_tree', true,
@@ -52,7 +56,8 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_expanded"><?php echo __('Expand Tree'); ?></label>
+            <?php echo $this->formLabel('subject_browse_expanded',
+                __('Expand tree')); ?>
         </div>
         <div class="inputs five columns omega">
             <?php echo get_view()->formCheckbox('subject_browse_expanded', true,
@@ -65,7 +70,8 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
-            <label for="subject_browse_hierarchy"><?php echo __('Set the hierarchy of subjects'); ?></label>
+            <?php echo $this->formLabel('subject_browse_hierarchy',
+                __('Set the hierarchy of subjects')); ?>
         </div>
         <div class="inputs five columns omega">
            <div class='input-block'>
@@ -76,7 +82,19 @@
                         'rows' => 20,
                         'cols' => 60,
                         'class' => array('textinput'),
+                        'placeholder' => '
+Europe ↵
+- France ↵
+-- Paris ↵
+-- Lyon ↵
+-- Marseille ↵
+- United Kingdom ↵
+-- London ↵
+-- Manchester ↵
+Asia ↵
+',
                 )); ?>
+            </div>
             <p class="explanation">
                 <?php echo __('If any, write the hierarchy of all your subjects in order to display them in the "Hierarchy of Subjects" page.'); ?>
                 <?php echo __('Format is: one subjet by line, preceded by zero, one or more "-" to indicate the hierarchy level. Separate the "-" and the subject with a space. Empty lines are not considered.'); ?>

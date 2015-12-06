@@ -17,4 +17,4 @@ echo head(array(
     endif;
     ?>
 </div>
-<?php echo foot(); ?>
+<?php echo foot();
