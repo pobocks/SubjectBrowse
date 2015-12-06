@@ -24,6 +24,7 @@
      * @var array Hooks for the plugin.
      */
     protected $_hooks = array(
+        'initialize',
         'install',
         'upgrade',
         'uninstall',
@@ -52,6 +53,14 @@
         'subject_browse_hierarchy' => '',
         'subject_browse_item_links' => 1,
     );
+
+    /**
+     * Add the translations.
+     */
+    public function hookInitialize()
+    {
+        add_translation_source(dirname(__FILE__) . '/languages');
+    }
 
     /**
      * Install the plugin.
