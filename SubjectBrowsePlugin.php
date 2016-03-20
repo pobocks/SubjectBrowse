@@ -15,7 +15,7 @@
  * The Subject Browse plugin.
  * @package Omeka\Plugins\SubjectBrowse
  */
- class SubjectBrowsePlugin extends Omeka_Plugin_AbstractPlugin
+class SubjectBrowsePlugin extends Omeka_Plugin_AbstractPlugin
 {
     const SUBJECT_BROWSE_PATH_LIST = 'subjects/list';
     const SUBJECT_BROWSE_PATH_TREE = 'subjects/tree';

@@ -92,7 +92,7 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
             $subjects = array_map('strip_formatting', $subjects);
             // List of subjects may need to be reordered after reformatting.
             if ($options['mode'] == 'list') {
-                sort($subjects);
+                natcasesort($subjects);
                 $subjects = array_unique($subjects);
             }
         }
@@ -147,10 +147,11 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
         // A query allows quick access to all subjects (no need for elements).
         $db = get_db();
         $sql = "
-            SELECT DISTINCT text
-            FROM $db->ElementTexts
-            WHERE element_id = {$this->_DC_Subject_id}
-            ORDER BY text;
+            SELECT DISTINCT `text`
+            FROM `$db->ElementTexts`
+            WHERE `element_id` = {$this->_DC_Subject_id}
+            ORDER BY `text`
+            COLLATE 'utf8_unicode_ci'
         ";
         $result = $db->fetchCol($sql);
 
