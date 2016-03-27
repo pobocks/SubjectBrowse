@@ -53,6 +53,22 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     }
 
     /**
+     * Count the total of distinct element texts for a slug.
+     *
+     * @param string $slug
+     * @return integer
+     */
+    public function count($slug)
+    {
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        if (empty($slug) || empty($slugs) || empty($slugs[$slug]['active'])) {
+            return;
+        }
+
+        return $this->_count($slugs[$slug]);
+    }
+
+    /**
      * Display the list of references via a partial view.
      *
      * @param array $references Array of references elements to show.
@@ -278,5 +294,40 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
         $subjects = get_option('reference_tree_hierarchy');
         $subjects = array_filter(explode(PHP_EOL, $subjects));
         return $subjects;
+    }
+
+    /**
+     * Count the references for a slug.
+     *
+     * When the type is not an element, a filter is added and the list of titles
+     * are returned.
+     *
+     * @param array $slugData
+     * @return integer
+     */
+    protected function _count($slugData)
+    {
+        $elementId = $slugData['type'] == 'Element' ? $slugData['id'] : $this->_DC_Title_id;
+
+        $db = get_db();
+        $elementTextsTable = $db->getTable('ElementText');
+        $elementTextsAlias = $elementTextsTable->getTableAlias();
+        $select = $elementTextsTable->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->from(array(), array($elementTextsAlias . '.text'))
+            ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
+            ->where($elementTextsAlias . ".record_type = 'Item'")
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
+            ->group($elementTextsAlias . '.text');
+
+        if ($slugData['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slugData['id']);
+        }
+
+        $permissions = new Omeka_Db_Select_PublicPermissions('Items');
+        $permissions->apply($select, 'items');
+
+        $totalRecords = $db->query($select . " COLLATE 'utf8_unicode_ci'")->rowCount();
+        return $totalRecords;
     }
 }

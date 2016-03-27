@@ -18,7 +18,7 @@ echo head(array(
                 url('references/' . $slug),
                 __('Browse %s', $slugData['label']),
                 $slugData['label'],
-                $this->referenceCount($slug)); ?>
+                $this->reference()->count($slug)); ?>
             </li>
         <?php endforeach;
     else:
@@ -42,7 +42,7 @@ echo head(array(
                 url('references/' . $slug),
                 __('Browse %s', $slugData['label']),
                 $slugData['label'],
-                $this->referenceCount($slug)); ?>
+                $this->reference()->count($slug)); ?>
             </li>
         <?php endforeach; ?>
         </ul></li>
