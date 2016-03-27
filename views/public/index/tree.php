@@ -11,7 +11,9 @@ echo head(array(
     </nav>
     <?php
     if (count($subjects)) :
-        echo $this->reference($subjects, array('mode' => 'tree'));
+        echo $this->reference($subjects, array(
+            'mode' => 'tree',
+        ));
     else :
         echo '<p>' . __('There is no hierarchy of subjects.') . '</p>';
     endif;

@@ -41,8 +41,8 @@
 
                 if (empty($options['raw'])):
                     echo '<a href="'
-                        . url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
-                            $dcSubjectId, urlencode($subject)))
+                        . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s',
+                            $referenceId, urlencode($subject)))
                         . '">'
                         . $subject
                         . '</a>';

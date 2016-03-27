@@ -1,11 +1,11 @@
 <?php
-if (count($subjects)):
+if (count($references)):
     // Prepare and display skip links.
     if ($options['skiplinks']):
         // Get the list of headers.
         $letters = array('number' => false) + array_fill_keys(range('A', 'Z'), false);
-        foreach ($subjects as $subject) {
-            $first_char = substr($subject, 0, 1);
+        foreach ($references as $reference) {
+            $first_char = substr($reference, 0, 1);
             if (preg_match('/\W|\d/', $first_char)) {
                 $letters['number'] = true;
             }
@@ -27,8 +27,12 @@ if (count($subjects)):
     ?>
 <style>
 .reference-pagination {float: none;}
-.reference-pagination ul {height: 3em;}
-.reference-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}
+.reference-pagination.pagination {width: auto; height: auto;}
+.reference-pagination ul.pagination_list {height: auto; padding-left: 0;}
+.reference-pagination li.pagination_range {height: auto; line-height: auto;}
+.reference-pagination li.pagination_range a {margin-right: 0px;}
+.reference-pagination li.pagination_range span {line-height: 36px; margin-right: 0px; padding: 0.375em 10px;}
+.reference-pagination li.pagination_range a:hover {background-color: #CCCCCC;}
 </style>
 <div class="pagination reference-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
@@ -39,10 +43,10 @@ if (count($subjects)):
     <?php
     $current_heading = '';
     $current_id = '';
-    foreach ($subjects as $subject):
+    foreach ($references as $reference):
         // Add the first character as header if wanted.
         if ($options['headings']):
-            $first_char = substr($subject, 0, 1);
+            $first_char = substr($reference, 0, 1);
             if (preg_match('/\W|\d/', $first_char)) {
                 $first_char = '#0-9';
             }
@@ -58,12 +62,12 @@ if (count($subjects)):
         <?php if (empty($options['raw'])):
             echo '<a href="'
                 . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s',
-                    $dcSubjectId, urlencode($subject)))
+                    $referenceId, urlencode($reference)))
                 . '">'
-                . $subject
+                . $reference
                 . '</a>';
         else:
-            echo $subject;
+            echo $reference;
         endif; ?>
     </p>
     <?php endforeach; ?>

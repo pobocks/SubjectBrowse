@@ -8,20 +8,21 @@
  */
 class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 {
+    // This is true in all installations of Omeka (forced).
     protected $_DC_Subject_id = 49;
 
     /**
-     * Display the list or the tree of subjects via a partial view.
+     * Display the references list or the tree of subjects via a partial view.
      *
-     * For the mode "list", the subjects come from the items and are listed in
+     * For the mode "list", the references come from the items and are listed in
      * alphabetical order.
-     * For the mode "tree", the subjects come from the configuration and a
+     * For the mode "tree", the subjects come from the configuration and an
      * interactive hierarchical list is build with javascript .
      *
      * @uses http://www.jqueryscript.net/other/jQuery-Flat-Folder-Tree-Plugin-simplefolders.html
      *
      * @example
-     * $subjects = "
+     * $references = "
      * Europe
      * - France
      * - Germany
@@ -59,11 +60,11 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
      * </ul>
      * ";
      *
-     * @param array $subjects Array of Subjects elements to show, if any, else
-     * default ones
-     * @param array $options Options to display the subjects. They depend on the
-     * key "mode" ("list" (default) or "tree"). Values are booleans:
-     * - raw: Show subjects as raw text, not links (default to false)
+     * @param array $references Array of references or subjects elements to
+     * show, if any, else default ones.
+     * @param array $options Options to display the references. They depend on
+     * the key "mode" ("list" (default) or "tree"). Values are booleans:
+     * - raw: Show references as raw text, not links (default to false)
      * - strip: Remove html tags (default to true)
      * - skiplinks: Add the list of letters at top and bottom of the page
      * - headings: Add each letter as headers
@@ -74,32 +75,81 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
      *
      * @return string Html list.
      */
-    public function reference($subjects = array(), array $options = array())
+    public function reference($references = array(), array $options = array())
     {
         $view = $this->view;
 
-        $this->_DC_Subject_id = (integer) get_option('reference_DC_Subject_id');
-
         $options = $this->_cleanOptions($options);
+        $options['references'] = $references;
 
-        if (empty($subjects)) {
-            $subjects = $options['mode'] == 'tree'
-                ? $this->_getSubjectsTree()
-                : $this->_getSubjectsList();
+        switch ($options['mode']) {
+            case 'tree':
+                if (get_option('reference_tree_enabled')) {
+                    return $this->_tree($options);
+                }
+                break;
+
+            case 'list':
+            default:
+                if (get_option('reference_list_elements')) {
+                    return $this->_list($options);
+                }
+                break;
         }
+    }
+
+    public function _list($options)
+    {
+        $list = json_decode(get_option('reference_list_elements'), true);
+        $references = $options['references'];
+
+        $slug = $options['slug'];
+        $referenceId = is_numeric($slug)
+            ? (integer) $slug
+            : array_search($slug, $list['slug']);
+        // Check if this slug is allowed.
+        if (empty($list['active'][$referenceId])) {
+            return;
+        }
+        if (empty($references)) {
+            $references = $this->_getReferencesList($referenceId);
+        }
+         unset($options['references']);
+
+        if ($options['strip']) {
+            $references = array_map('strip_formatting', $references);
+            // List of subjects may need to be reordered after reformatting.
+            natcasesort($references);
+            $references = array_unique($references);
+        }
+
+        $html = $this->view->partial('common/reference-list.php', array(
+            'references' => $references,
+            'referenceId' => $referenceId,
+            'referenceSlug' => $list['slug'][$referenceId],
+            'referenceLabel' => $list['label'][$referenceId],
+            'options' => $options,
+        ));
+
+        return $html;
+    }
+
+    public function _tree($options)
+    {
+        $list = json_decode(get_option('reference_list_elements'), true);
+        $subjects = $options['references'] ?: $this->_getSubjectsTree();
+        unset($options['references']);
 
         if ($options['strip']) {
             $subjects = array_map('strip_formatting', $subjects);
-            // List of subjects may need to be reordered after reformatting.
-            if ($options['mode'] == 'list') {
-                natcasesort($subjects);
-                $subjects = array_unique($subjects);
-            }
         }
 
-        $html = $view->partial('common/reference-' . $options['mode'] . '.php', array(
-            'dcSubjectId' => $this->_DC_Subject_id,
+        $referenceId = $this->_DC_Subject_id;
+        $html = $this->view->partial('common/reference-tree.php', array(
             'subjects' => $subjects,
+            'referenceId' => $referenceId,
+            'referenceSlug' => $list['slug'][$referenceId],
+            'referenceLabel' => $list['label'][$referenceId],
             'options' => $options,
         ));
 
@@ -127,6 +177,9 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
                 $cleanedOptions['skiplinks'] = (boolean) (isset($options['skiplinks'])
                     ? $options['skiplinks']
                     : get_option('reference_list_skiplinks'));
+                $cleanedOptions['slug'] = empty($options['slug'])
+                    ? $this->_DC_Subject_id
+                    : $options['slug'];
                 break;
 
             case 'tree':
@@ -140,16 +193,16 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     }
 
     /**
-     * Get the dafault list of subjects.
+     * Get the list of references.
      */
-    protected function _getSubjectsList()
+    protected function _getReferencesList($referenceId)
     {
         // A query allows quick access to all subjects (no need for elements).
         $db = get_db();
         $sql = "
             SELECT DISTINCT `text`
             FROM `$db->ElementTexts`
-            WHERE `element_id` = {$this->_DC_Subject_id}
+            WHERE `element_id` = '$referenceId'
             ORDER BY `text`
             COLLATE 'utf8_unicode_ci'
         ";
