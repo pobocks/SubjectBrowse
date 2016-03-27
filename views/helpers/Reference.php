@@ -1,12 +1,12 @@
 <?php
 /**
- * Subject Browse helper.
+ * Reference helper.
  */
 
 /**
- * @package SubjectBrowse
+ * @package Reference
  */
-class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
+class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 {
     protected $_DC_Subject_id = 49;
 
@@ -74,11 +74,11 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
      *
      * @return string Html list.
      */
-    public function subjectBrowse($subjects = array(), array $options = array())
+    public function reference($subjects = array(), array $options = array())
     {
         $view = $this->view;
 
-        $this->_DC_Subject_id = (integer) get_option('subject_browse_DC_Subject_id');
+        $this->_DC_Subject_id = (integer) get_option('reference_DC_Subject_id');
 
         $options = $this->_cleanOptions($options);
 
@@ -97,7 +97,7 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
             }
         }
 
-        $html = $view->partial('common/subject-browse-' . $options['mode'] . '.php', array(
+        $html = $view->partial('common/reference-' . $options['mode'] . '.php', array(
             'dcSubjectId' => $this->_DC_Subject_id,
             'subjects' => $subjects,
             'options' => $options,
@@ -123,16 +123,16 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
             case 'list':
                 $cleanedOptions['headings'] = (boolean) (isset($options['headings'])
                     ? $options['headings']
-                    : get_option('subject_browse_list_headings'));
+                    : get_option('reference_list_headings'));
                 $cleanedOptions['skiplinks'] = (boolean) (isset($options['skiplinks'])
                     ? $options['skiplinks']
-                    : get_option('subject_browse_list_skiplinks'));
+                    : get_option('reference_list_skiplinks'));
                 break;
 
             case 'tree':
                 $cleanedOptions['expanded'] = (boolean) (isset($options['expanded'])
                     ? $options['expanded']
-                    : get_option('subject_browse_tree_expanded'));
+                    : get_option('reference_tree_expanded'));
                 break;
         }
 
@@ -163,7 +163,7 @@ class SubjectBrowse_View_Helper_SubjectBrowse extends Zend_View_Helper_Abstract
      */
     protected function _getSubjectsTree()
     {
-        $subjects = get_option('subject_browse_tree_hierarchy');
+        $subjects = get_option('reference_tree_hierarchy');
         $subjects = array_filter(explode(PHP_EOL, $subjects));
 
         return $subjects;

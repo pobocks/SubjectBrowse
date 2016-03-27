@@ -26,16 +26,16 @@ if (count($subjects)):
         $pagination_list .= '</ul>';
     ?>
 <style>
-.sb-pagination {float: none;}
-.sb-pagination ul {height: 3em;}
-.sb-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}
+.reference-pagination {float: none;}
+.reference-pagination ul {height: 3em;}
+.reference-pagination span {display: inline-block; line-height: 36px; padding: 0 10px;}
 </style>
-<div class="pagination sb-pagination" id="pagination-top">
+<div class="pagination reference-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
 </div>
     <?php endif; ?>
 
-<div id="sb-subject-headings">
+<div id="reference-headings">
     <?php
     $current_heading = '';
     $current_id = '';
@@ -50,14 +50,14 @@ if (count($subjects)):
             if ($current_heading !== $current_first_char):
                 $current_heading = $current_first_char;
                 $current_id = $current_heading === '#0-9' ? 'number' : $current_heading; ?>
-    <h3 class="sb-subject-heading" id="<?php echo $current_id; ?>"><?php echo $current_heading; ?></h3>
+    <h3 class="reference-heading" id="<?php echo $current_id; ?>"><?php echo $current_heading; ?></h3>
             <?php endif;
         endif; ?>
 
-    <p class="sb-subject">
+    <p class="reference-record">
         <?php if (empty($options['raw'])):
             echo '<a href="'
-                . url(sprintf('items/browse?search=&amp;advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s&amp;submit_search=Search',
+                . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s',
                     $dcSubjectId, urlencode($subject)))
                 . '">'
                 . $subject
@@ -70,7 +70,7 @@ if (count($subjects)):
 </div>
 
     <?php if ($options['skiplinks']): ?>
-<div class="pagination sb-pagination" id="pagination-bottom">
+<div class="pagination reference-pagination" id="pagination-bottom">
     <?php echo $pagination_list; ?>
 </div>
     <?php endif;

@@ -1,6 +1,6 @@
 <?php if (count($subjects)): ?>
 <link href="<?php echo css_src('jquery-simple-folders'); ?>" media="all" rel="stylesheet" type="text/css" />
-<div id="sb-subject-headings">
+<div id="reference-headings">
     <?php echo js_tag('jquery-simple-folders'); ?>
     <ul class="tree">
         <?php

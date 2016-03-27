@@ -1,18 +1,18 @@
-Subject Browse (plugin for Omeka)
+Reference (plugin for Omeka)
 =================================
 
-[Subject Browse] is a plugin for [Omeka] that allows to serve an alphabetized
-page of links to searches for all subjects of all items of an Omeka instance,
-or an expandable hierarchical list of all subjects. These pages can be displayed
-in any page via a helper.
+[Reference] is a plugin for [Omeka] that allows to serve an alphabetized page of
+links to searches for all subjects of all items of an Omeka instance, or an
+expandable hierarchical list of all subjects. These pages can be displayed in
+any page via a helper.
 
-It is available for Omeka 1.5 ([Subject Browse (1.x)]) and for Omeka 2 ([Subject Browse (2.x)]).
+It is available for Omeka 1.5 ([SubjectBrowse (1.x)]) and for Omeka 2 ([Reference (2.x)]).
 
 
 Installation
 ------------
 
-Uncompress files and rename plugin folder "SubjectBrowse".
+Uncompress files and rename plugin folder "Reference".
 
 Then install it like any other Omeka plugin and follow the config instructions.
 
@@ -48,10 +48,10 @@ level.
 - A subject cannot begin with a "-" or a space.
 - Empty lines are not considered.
 
-These contents can be displayed on any page via the helper `subjectBrowse()`:
+These contents can be displayed on any page via the helper `reference()`:
 
 ```
-echo $this->subjectBrowse($subjects, array(
+echo $this->reference($subjects, array(
     'mode' => 'list',
     'skiplinks' => true,
     'headings' => true,
@@ -62,7 +62,7 @@ echo $this->subjectBrowse($subjects, array(
 
 For tree view:
 ```
-echo $this->subjectBrowse($subjects, array(
+echo $this->reference($subjects, array(
     'mode' => 'tree',
     'expanded' => true,
     'strip' => true,
@@ -71,7 +71,7 @@ echo $this->subjectBrowse($subjects, array(
 ```
 
 All arguments are optional and the default ones are set in the config page, but
-they can be overridden in the theme. So a simple `echo $this->subjectBrowse();`
+they can be overridden in the theme. So a simple `echo $this->reference();`
 is enough.
 
 The helper shortcode "subjects" can be used too, in particular in exhibits and
@@ -135,7 +135,7 @@ Contact
 Current maintainers:
 
 * William Mayo (mail: <mayow@simmons.edu>, see [pobocks] on GitHub)
-* Daniel Berthereau (see [Daniel-KM] on GitHub, release [Subject Browse (2.x)])
+* Daniel Berthereau (see [Daniel-KM] on GitHub, release [Reference (2.x)])
 
 
 First version of this plugin has been built by [Wiliam David Mayo]. Upgrade and
@@ -151,11 +151,11 @@ Copyright
 
 
 [Omeka]: https://omeka.org
-[Subject Browse]: https://github.com/pobocks/SubjectBrowse
+[Reference]: https://github.com/pobocks/Reference
 [Subject Browse (1.x)]: https://github.com/pobocks/SubjectBrowse
-[Subject Browse (2.x)]: https://github.com/Daniel-KM/SubjectBrowse
+[Reference (2.x)]: https://github.com/Daniel-KM/Reference
 [plugin issues (1.x)]: https://github.com/pobocks/SubjectBrowse/issues
-[plugin issues (2.x)]: https://github.com/Daniel-KM/SubjectBrowse/issues
+[plugin issues (2.x)]: https://github.com/Daniel-KM/Reference/issues
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html "GNU/GPL v3"
 [MIT]: http://http://opensource.org/licenses/MIT
 [pobocks]: https://github.com/pobocks
