@@ -96,6 +96,22 @@
             </p>
         </div>
     </div>
+    <div class="field">
+        <div class="two columns alpha">
+            <?php echo $this->formLabel('reference_query_type', __('Query Type')); ?>
+        </div>
+        <div class='inputs five columns omega'>
+            <?php
+                echo $this->formRadio('reference_query_type', get_option('reference_query_type') ?: 'is exactly', null, array(
+                    'is exactly' => __('Is Exactly'),
+                    'contains' => __('Contains'),
+                ));
+            ?>
+            <p class="explanation">
+                <?php echo __('The type of query defines how elements are regrouped (see the advanced search).'); ?>
+            </p>
+        </div>
+    </div>
 </fieldset>
 <fieldset id="fieldset-reference-tree"><legend><?php echo __('Hierarchy of Subjects'); ?></legend>
     <div class="field">

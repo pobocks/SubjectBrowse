@@ -1,5 +1,6 @@
 <?php
 if (count($references)):
+    $queryType = get_option('reference_query_type') == 'contains' ? 'contains' : 'is+exactly';
     // Prepare and display skip links.
     if ($options['skiplinks']):
         // Get the list of headers.
@@ -52,8 +53,8 @@ if (count($references)):
     <p class="reference-record">
         <?php if (empty($options['raw'])):
             echo '<a href="'
-                . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s',
-                    $referenceId, urlencode($reference)))
+                . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
+                    $referenceId, $queryType, urlencode($reference)))
                 . '">'
                 . $reference
                 . '</a>';

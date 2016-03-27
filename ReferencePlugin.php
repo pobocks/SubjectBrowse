@@ -56,6 +56,7 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
         'reference_tree_enabled' => false,
         'reference_tree_expanded' => true,
         'reference_tree_hierarchy' => '',
+        'reference_query_type' => 'is exactly',
     );
 
     /**

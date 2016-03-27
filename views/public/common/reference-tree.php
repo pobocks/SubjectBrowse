@@ -1,4 +1,7 @@
-<?php if (count($subjects)): ?>
+<?php
+if (count($subjects)):
+    $queryType = get_option('reference_query_type') == 'contains' ? 'contains' : 'is+exactly';
+?>
 <link href="<?php echo css_src('jquery-simple-folders'); ?>" media="all" rel="stylesheet" type="text/css" />
 <div id="reference-headings">
     <?php echo js_tag('jquery-simple-folders'); ?>
@@ -41,8 +44,8 @@
 
                 if (empty($options['raw'])):
                     echo '<a href="'
-                        . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=contains&amp;advanced[0][terms]=%s',
-                            $referenceId, urlencode($subject)))
+                        . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
+                            $referenceId, $queryType, urlencode($subject)))
                         . '">'
                         . $subject
                         . '</a>';
