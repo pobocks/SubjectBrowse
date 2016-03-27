@@ -69,7 +69,8 @@ class Reference_IndexController extends Omeka_Controller_AbstractActionControlle
         $sql = "
             SELECT DISTINCT `text`
             FROM `$db->ElementTexts`
-            WHERE `element_id` = '$referenceId'
+            WHERE `record_type` = 'Item'
+                AND`element_id` = '$referenceId'
             ORDER BY `text`
             COLLATE 'utf8_unicode_ci'
         ";

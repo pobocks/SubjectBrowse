@@ -202,7 +202,8 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
         $sql = "
             SELECT DISTINCT `text`
             FROM `$db->ElementTexts`
-            WHERE `element_id` = '$referenceId'
+            WHERE `record_type` = 'Item'
+                AND`element_id` = '$referenceId'
             ORDER BY `text`
             COLLATE 'utf8_unicode_ci'
         ";

@@ -28,6 +28,7 @@ class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
         $db = get_db();
         $select = $db->getTable('ElementText')
             ->getSelect()
+            ->where("element_texts.record_type = 'Item'")
             ->where('element_texts.element_id = ' . $elementId)
             ->group('element_texts.text');
         $totalRecords = $db->query($select)->rowCount();
