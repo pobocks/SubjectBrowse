@@ -194,21 +194,30 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 
     /**
      * Get the list of references.
+     *
+     * @see Reference_IndexController::_getReferencesList()
+     * @param integer $referenceId
+     * @return array
      */
     protected function _getReferencesList($referenceId)
     {
         // A query allows quick access to all subjects (no need for elements).
         $db = get_db();
-        $sql = "
-            SELECT DISTINCT `text`
-            FROM `$db->ElementTexts`
-            WHERE `record_type` = 'Item'
-                AND`element_id` = '$referenceId'
-            ORDER BY `text`
-            COLLATE 'utf8_unicode_ci'
-        ";
-        $result = $db->fetchCol($sql);
+        $elementTextsTable = $db->getTable('ElementText');
+        $elementTextsAlias = $elementTextsTable->getTableAlias();
+        $select = $elementTextsTable->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->from(array(), array($elementTextsAlias . '.text'))
+            ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
+            ->where("element_texts.record_type = 'Item'")
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $referenceId)
+            ->group($elementTextsAlias . '.text')
+            ->order($elementTextsAlias . '.text ASC' . " COLLATE 'utf8_unicode_ci'");
 
+        $permissions = new Omeka_Db_Select_PublicPermissions('Items');
+        $permissions->apply($select, 'items');
+
+        $result = $db->fetchCol($select);
         return $result;
     }
 

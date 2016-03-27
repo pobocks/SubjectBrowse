@@ -23,15 +23,23 @@ class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
             $list = json_decode(get_option('reference_list_elements'), true) ?: array('slug' => array());
             $element = array_search($element, $list['slug']);
         }
-        $elementId = (integer) $element;
+        $referenceId = $element;
 
         $db = get_db();
-        $select = $db->getTable('ElementText')
-            ->getSelect()
-            ->where("element_texts.record_type = 'Item'")
-            ->where('element_texts.element_id = ' . $elementId)
-            ->group('element_texts.text');
-        $totalRecords = $db->query($select)->rowCount();
+        $elementTextsTable = $db->getTable('ElementText');
+        $elementTextsAlias = $elementTextsTable->getTableAlias();
+        $select = $elementTextsTable->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->from(array(), array($elementTextsAlias . '.text'))
+            ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
+            ->where($elementTextsAlias . ".record_type = 'Item'")
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $referenceId)
+            ->group($elementTextsAlias . '.text');
+
+        $permissions = new Omeka_Db_Select_PublicPermissions('Items');
+        $permissions->apply($select, 'items');
+
+        $totalRecords = $db->query($select . " COLLATE 'utf8_unicode_ci'")->rowCount();
         return $totalRecords;
     }
 }
