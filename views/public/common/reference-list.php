@@ -25,15 +25,6 @@ if (count($references)):
         endforeach;
         $pagination_list .= '</ul>';
     ?>
-<style>
-.reference-pagination {float: none;}
-.reference-pagination.pagination {width: auto; height: auto;}
-.reference-pagination ul.pagination_list {height: auto; padding-left: 0;}
-.reference-pagination li.pagination_range {height: auto; line-height: auto;}
-.reference-pagination li.pagination_range a {margin-right: 0px;}
-.reference-pagination li.pagination_range span {line-height: 36px; margin-right: 0px; padding: 0.375em 10px;}
-.reference-pagination li.pagination_range a:hover {background-color: #CCCCCC;}
-</style>
 <div class="pagination reference-pagination" id="pagination-top">
     <?php echo $pagination_list; ?>
 </div>

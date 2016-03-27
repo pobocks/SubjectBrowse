@@ -30,6 +30,7 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
         'config_form',
         'config',
         'define_routes',
+        'public_head',
     );
 
     /**
@@ -181,6 +182,11 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
     {
         $args['router']->addConfig(new Zend_Config_Ini(
             dirname(__FILE__) . DIRECTORY_SEPARATOR . 'routes.ini', 'routes'));
+    }
+
+    public function hookPublicHead($args)
+    {
+        queue_css_file('reference');
     }
 
     /**
