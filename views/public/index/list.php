@@ -11,10 +11,8 @@ echo head(array(
     </nav>
     <?php
     if (count($references)) :
-        echo $this->reference($references, array(
-            'mode' => 'list',
+        echo $this->reference()->displayList($references, array(
             'slug' => $slug,
-            'slugData' => $slugData,
         ));
     else:
         echo '<p>' . __('There is no references for "%s".', $slugData['label']) . '</p>';

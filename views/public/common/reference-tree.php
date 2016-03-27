@@ -37,8 +37,8 @@ if (count($subjects)):
                 // Start the line with or without a new sub-list.
                 if ($level > $previous_level) {
                     // Deeper level is always the next one.
-                    echo PHP_EOL . '<div class="expander' . ($options['expanded'] ? ' expanded' : '') . '"></div>';
-                    echo '<ul' . ($options['expanded'] ? ' class="expanded"' : '') . '><li>';
+                    echo PHP_EOL . '<div class="expander' . (empty($options['expanded']) ? '' : ' expanded' ) . '"></div>';
+                    echo '<ul' . (empty($options['expanded']) ? '' : ' class="expanded"') . '><li>';
                 }
                 else {
                     echo '<li>';

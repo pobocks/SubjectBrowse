@@ -13,15 +13,117 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     protected $_DC_Title_id = 50;
 
     /**
-     * Display the references list or the tree of subjects via a partial view.
+     * Get the reference view object.
      *
-     * For the mode "list", the references come from the items and are listed in
-     * alphabetical order.
-     * For the mode "tree", the subjects come from the configuration and an
-     * interactive hierarchical list is build with javascript .
+     * @return This view helper.
+     */
+    public function reference()
+    {
+        return $this;
+    }
+
+    /**
+     * Get the list of references of the slug.
+     *
+     * @param string $slug
+     * @return array Associative array with total and first record ids.
+     */
+    public function getList($slug)
+    {
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        if (empty($slug) || empty($slugs) || empty($slugs[$slug]['active'])) {
+            return;
+        }
+        $references = $this->_getReferencesList($slugs[$slug]);
+        return $references;
+    }
+
+    /**
+     * Get the list of subjects.
+     *
+     * @return array.
+     */
+    public function getTree()
+    {
+        if (!get_option('reference_tree_enabled')) {
+            return array();
+        }
+        $subjects = $this->_getSubjectsTree();
+        return $subjects;
+    }
+
+    /**
+     * Display the list of references via a partial view.
+     *
+     * @param array $references Array of references elements to show.
+     * @param array $options Options to display references. Values are booleans:
+     * - raw: Show references as raw text, not links (default to false)
+     * - strip: Remove html tags (default to true)
+     * - skiplinks: Add the list of letters at top and bottom of the page
+     * - headings: Add each letter as headers
+     * @return string Html list.
+     */
+    public function displayList($references, array $options = array())
+    {
+        $view = $this->view;
+
+        if (empty($references) || empty($options['slug'])) {
+            return;
+        }
+
+        $options = $this->_cleanOptions($options);
+
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        $slug = $options['slug'];
+        if (empty($slugs) || empty($slugs[$slug]['active'])) {
+            return;
+        }
+        $references = $this->_getReferencesList($slugs[$slug]);
+
+        if ($options['strip']) {
+            $total = count($references);
+            $referencesList = array_map('strip_formatting', array_keys($references));
+            // List of subjects may need to be reordered after reformatting. The
+            // total may have been changed. In that case, total of each
+            // reference is lost.
+            if ($total == count($referencesList)) {
+                $references = array_combine($referencesList, $references);
+            }
+            // Should be done manually.
+            else {
+                $referenceList = array_combine($referenceList, array_fill(0, count($referenceList), null));
+                foreach ($referenceList as $referenceText => &$value) {
+                    foreach ($references as $reference => $referenceData) {
+                        if (is_null($value)) {
+                            $value = $referenceData;
+                        }
+                        // Keep the first record id.
+                        else {
+                            $value['count'] += $referenceData['count'];
+                        }
+                    }
+                }
+                $references = $referencesList;
+            }
+            ksort($references , SORT_STRING | SORT_FLAG_CASE);
+        }
+
+        $html = $this->view->partial('common/reference-list.php', array(
+            'references' => $references,
+            'slug' => $slug,
+            'slugData' => $slugs[$slug],
+            'options' => $options,
+        ));
+
+        return $html;
+    }
+
+    /**
+     * Display the tree of subjects via a partial view.
      *
      * @uses http://www.jqueryscript.net/other/jQuery-Flat-Folder-Tree-Plugin-simplefolders.html
      *
+     *  Example for the mode "tree":
      * @example
      * $references = "
      * Europe
@@ -61,77 +163,22 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
      * </ul>
      * ";
      *
-     * @param array $references Array of references or subjects elements to
-     * show, if any, else default ones.
-     * @param array $options Options to display the references. They depend on
-     * the key "mode" ("list" (default) or "tree"). Values are booleans:
-     * - raw: Show references as raw text, not links (default to false)
-     * - strip: Remove html tags (default to true)
-     * - skiplinks: Add the list of letters at top and bottom of the page
-     * - headings: Add each letter as headers
-     * For "tree"
+     * @param array $references Array of subjects elements to show.
+     * @param array $options Options to display the references. Values are booleans:
      * - raw: Show subjects as raw text, not links (default to false)
      * - strip: Remove html tags (default to true)
      * - expanded: Show tree as expanded (defaul to config)
-     *
      * @return string Html list.
      */
-    public function reference($references = array(), array $options = array())
+    public function displayTree($subjects, array $options = array())
     {
         $view = $this->view;
 
-        $options = $this->_cleanOptions($options);
-        $options['references'] = $references;
-
-        switch ($options['mode']) {
-            case 'tree':
-                if (get_option('reference_tree_enabled')) {
-                    return $this->_tree($options);
-                }
-                break;
-
-            case 'list':
-            default:
-                return $this->_list($options);
-        }
-    }
-
-    public function _list($options)
-    {
-        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
-        $references = $options['references'];
-
-        $slug = $options['slug'];
-        if (empty($slugs) || empty($slugs[$slug]['active'])) {
+        if (empty($subjects)) {
             return;
         }
 
-        if (empty($references)) {
-            $references = $this->_getReferencesList($slugs[$slug]);
-        }
-         unset($options['references']);
-
-        if ($options['strip']) {
-            $references = array_map('strip_formatting', $references);
-            // List of subjects may need to be reordered after reformatting.
-            natcasesort($references);
-            $references = array_unique($references);
-        }
-
-        $html = $this->view->partial('common/reference-list.php', array(
-            'references' => $references,
-            'slug' => $slug,
-            'slugData' => $slugs[$slug],
-            'options' => $options,
-        ));
-
-        return $html;
-    }
-
-    public function _tree($options)
-    {
-        $subjects = $options['references'] ?: $this->_getSubjectsTree();
-        unset($options['references']);
+        $options = $this->_cleanOptions($options);
 
         if ($options['strip']) {
             $subjects = array_map('strip_formatting', $subjects);
@@ -182,39 +229,44 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     }
 
     /**
-     * Get the list of references.
+     * Get the list of references, the total for each one and the first item.
      *
-     * When the type is not element, a filter is added and the list of titles
+     * When the type is not an element, a filter is added and the list of titles
      * are returned.
      *
-     * @see Reference_IndexController::_getReferencesList()
-     * @param array $slug
-     * @return array
+     * @param array $slugData
+     * @return array Associative list of references, with the total and the
+     * first record.
      */
-    protected function _getReferencesList($slug)
+    protected function _getReferencesList($slugData)
     {
-        $elementId = $slug['type'] == 'Element' ? $slug['id'] : $this->_DC_Title_id;
+        $elementId = $slugData['type'] == 'Element' ? $slugData['id'] : $this->_DC_Title_id;
 
         $db = get_db();
         $elementTextsTable = $db->getTable('ElementText');
         $elementTextsAlias = $elementTextsTable->getTableAlias();
         $select = $elementTextsTable->getSelect()
             ->reset(Zend_Db_Select::COLUMNS)
-            ->from(array(), array($elementTextsAlias . '.text'))
+            ->from(array(), array(
+                'text' => $elementTextsAlias . '.text',
+                'count' => 'COUNT(*)',
+                'record_id' => $elementTextsAlias . '.record_id',
+            ))
             ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
-            ->where("element_texts.record_type = 'Item'")
+            ->where($elementTextsAlias . ".record_type = 'Item'")
             ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
             ->group($elementTextsAlias . '.text')
-            ->order($elementTextsAlias . '.text ASC' . " COLLATE 'utf8_unicode_ci'");
+            ->order($elementTextsAlias . '.text ASC' . " COLLATE 'utf8_unicode_ci'")
+            ->order($elementTextsAlias . '.record_id ASC');
 
-        if ($slug['type'] == 'ItemType') {
-            $select->where('items.item_type_id = ' . (integer) $slug['id']);
+        if ($slugData['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slugData['id']);
         }
 
         $permissions = new Omeka_Db_Select_PublicPermissions('Items');
         $permissions->apply($select, 'items');
 
-        $result = $db->fetchCol($select);
+        $result = $db->fetchAssoc($select);
         return $result;
     }
 
@@ -225,7 +277,6 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     {
         $subjects = get_option('reference_tree_hierarchy');
         $subjects = array_filter(explode(PHP_EOL, $subjects));
-
         return $subjects;
     }
 }

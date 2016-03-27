@@ -24,9 +24,9 @@ class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
             return;
         }
 
-        $slug = $slugs[$slug];
+        $slugData = $slugs[$slug];
 
-        $elementId = $slug['type'] == 'Element' ? $slug['id'] : $this->_DC_Title_id;
+        $elementId = $slugData['type'] == 'Element' ? $slugData['id'] : $this->_DC_Title_id;
 
         $db = get_db();
         $elementTextsTable = $db->getTable('ElementText');
@@ -39,8 +39,8 @@ class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
             ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
             ->group($elementTextsAlias . '.text');
 
-        if ($slug['type'] == 'ItemType') {
-            $select->where('items.item_type_id = ' . (integer) $slug['id']);
+        if ($slugData['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slugData['id']);
         }
 
         $permissions = new Omeka_Db_Select_PublicPermissions('Items');

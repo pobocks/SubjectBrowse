@@ -56,6 +56,7 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
         ),
         'reference_list_skiplinks' => true,
         'reference_list_headings' => true,
+        'reference_link_to_single' => true,
         'reference_tree_enabled' => false,
         'reference_tree_expanded' => true,
         'reference_tree_hierarchy' => '',
@@ -348,8 +349,22 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function shortcodeReference($args, $view)
     {
-        $args['mode'] = 'list';
-        return $this->_shortcode($args, $view);
+        $args['view'] = $view;
+        if (empty($args['slug'])) {
+            return;
+        }
+        $references = $view->reference()->getList($args['slug']);
+        foreach ($args as &$arg) {
+            // Set true values.
+            if ($arg == 'true') {
+                $arg = true;
+            }
+            // Set false values.
+            elseif ($arg == 'false') {
+                $arg = false;
+            }
+        }
+        return $view->reference()->displayList($references, $args);
     }
 
     /**
@@ -361,24 +376,8 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function shortcodeSubjects($args, $view)
     {
-        $args['mode'] = 'tree';
-        return $this->_shortcode($args, $view);
-    }
-
-    /**
-     * Helper for shortcodes.
-     *
-     * @param array $args
-     * @param Omeka_View $view
-     * @return string
-     */
-    protected function _shortcode($args, $view)
-    {
         $args['view'] = $view;
-        $referencesKey = $args['mode'] == 'tree' ? 'subjects' : 'references';
-        $references = isset($args[$referencesKey])
-            ? array_filter(array_map('trim', explode(',', $args[$referencesKey])))
-            : array();
+        $subjects = $view->reference()->getTree();
         foreach ($args as &$arg) {
             // Set true values.
             if ($arg == 'true') {
@@ -389,6 +388,6 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
                 $arg = false;
             }
         }
-        return $view->reference($references, $args);
+        return $view->reference()->displayTree($subjects, $args);
     }
 }

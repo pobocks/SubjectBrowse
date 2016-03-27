@@ -88,9 +88,6 @@ exhibits and in simple pages:
 
 Arguments that are not set use the default values.
 
-The arguments "references" or "subjects" allow to display only a delimited list
-references or subjects.
-
 
 Warning
 -------

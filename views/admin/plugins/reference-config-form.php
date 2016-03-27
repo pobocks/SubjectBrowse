@@ -127,6 +127,19 @@
             </p>
         </div>
     </div>
+    <div class="field">
+        <div class="two columns alpha">
+            <?php echo $this->formLabel('reference_link_to_single',
+                __('Link to Single Records')); ?>
+        </div>
+        <div class="inputs five columns omega">
+            <?php echo $this->formCheckbox('reference_link_to_single', true,
+                array('checked' => (boolean) get_option('reference_link_to_single'))); ?>
+            <p class="explanation">
+                <?php echo __('When a reference has only one item, link to it directly instead of to the items/browse page.'); ?>
+            </p>
+        </div>
+    </div>
 </fieldset>
 <fieldset id="fieldset-reference-tree"><legend><?php echo __('Hierarchy of Subjects'); ?></legend>
     <div class="field">

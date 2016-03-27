@@ -7,7 +7,7 @@ if (count($references)):
     if ($options['skiplinks']):
         // Get the list of headers.
         $letters = array('number' => false) + array_fill_keys(range('A', 'Z'), false);
-        foreach ($references as $reference) {
+        foreach ($references as $reference => $referenceData) {
             $first_char = substr($reference, 0, 1);
             if (preg_match('/\W|\d/', $first_char)) {
                 $letters['number'] = true;
@@ -35,9 +35,10 @@ if (count($references)):
 
 <div id="reference-headings">
     <?php
+    $linkSingle = (boolean) get_option('reference_link_to_single');
     $current_heading = '';
     $current_id = '';
-    foreach ($references as $reference):
+    foreach ($references as $reference => $referenceData):
         // Add the first character as header if wanted.
         if ($options['headings']):
             $first_char = substr($reference, 0, 1);
@@ -54,13 +55,22 @@ if (count($references)):
 
     <p class="reference-record">
         <?php if (empty($options['raw'])):
-            $url = 'items/browse?';
-            if ($slugData['type'] == 'ItemType'):
-                $url .= 'type=' . $slugData['id'] . '&amp;';
+            if ($linkSingle && $referenceData['count'] === 1):
+                $record = get_record_by_id('Item', $referenceData['record_id']);
+                echo link_to($record, null, $reference);
+            else:
+                $url = 'items/browse?';
+                if ($slugData['type'] == 'ItemType'):
+                    $url .= 'type=' . $slugData['id'] . '&amp;';
+                endif;
+                $url .= sprintf('advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
+                    $referenceId, $queryType, urlencode($reference));
+                echo '<a href="' . url($url) . '">' . $reference . '</a>';
+                // Can be null when references are set directly.
+                if ($referenceData['count']):
+                    echo ' (' . $referenceData['count'] . ')';
+                endif;
             endif;
-            $url .= sprintf('advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
-                $referenceId, $queryType, urlencode($reference));
-            echo '<a href="' . url($url) . '">' . $reference . '</a>';
         else:
             echo $reference;
         endif; ?>
