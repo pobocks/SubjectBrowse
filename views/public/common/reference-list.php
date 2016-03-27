@@ -1,6 +1,8 @@
 <?php
 if (count($references)):
     $queryType = get_option('reference_query_type') == 'contains' ? 'contains' : 'is+exactly';
+    // Dublin Core Title is always 50.
+    $referenceId = $slugData['type'] == 'Element' ? $slugData['id'] : 50;
     // Prepare and display skip links.
     if ($options['skiplinks']):
         // Get the list of headers.
@@ -52,12 +54,13 @@ if (count($references)):
 
     <p class="reference-record">
         <?php if (empty($options['raw'])):
-            echo '<a href="'
-                . url(sprintf('items/browse?advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
-                    $referenceId, $queryType, urlencode($reference)))
-                . '">'
-                . $reference
-                . '</a>';
+            $url = 'items/browse?';
+            if ($slugData['type'] == 'ItemType'):
+                $url .= 'type=' . $slugData['id'] . '&amp;';
+            endif;
+            $url .= sprintf('advanced[0][element_id]=%s&amp;advanced[0][type]=%s&amp;advanced[0][terms]=%s',
+                $referenceId, $queryType, urlencode($reference));
+            echo '<a href="' . url($url) . '">' . $reference . '</a>';
         else:
             echo $reference;
         endif; ?>

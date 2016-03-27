@@ -10,6 +10,7 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 {
     // This is true in all installations of Omeka (forced).
     protected $_DC_Subject_id = 49;
+    protected $_DC_Title_id = 50;
 
     /**
      * Display the references list or the tree of subjects via a partial view.
@@ -91,28 +92,22 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 
             case 'list':
             default:
-                if (get_option('reference_list_elements')) {
-                    return $this->_list($options);
-                }
-                break;
+                return $this->_list($options);
         }
     }
 
     public function _list($options)
     {
-        $list = json_decode(get_option('reference_list_elements'), true);
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
         $references = $options['references'];
 
         $slug = $options['slug'];
-        $referenceId = is_numeric($slug)
-            ? (integer) $slug
-            : array_search($slug, $list['slug']);
-        // Check if this slug is allowed.
-        if (empty($list['active'][$referenceId])) {
+        if (empty($slugs) || empty($slugs[$slug]['active'])) {
             return;
         }
+
         if (empty($references)) {
-            $references = $this->_getReferencesList($referenceId);
+            $references = $this->_getReferencesList($slugs[$slug]);
         }
          unset($options['references']);
 
@@ -125,9 +120,8 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 
         $html = $this->view->partial('common/reference-list.php', array(
             'references' => $references,
-            'referenceId' => $referenceId,
-            'referenceSlug' => $list['slug'][$referenceId],
-            'referenceLabel' => $list['label'][$referenceId],
+            'slug' => $slug,
+            'slugData' => $slugs[$slug],
             'options' => $options,
         ));
 
@@ -136,7 +130,6 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
 
     public function _tree($options)
     {
-        $list = json_decode(get_option('reference_list_elements'), true);
         $subjects = $options['references'] ?: $this->_getSubjectsTree();
         unset($options['references']);
 
@@ -144,12 +137,8 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
             $subjects = array_map('strip_formatting', $subjects);
         }
 
-        $referenceId = $this->_DC_Subject_id;
         $html = $this->view->partial('common/reference-tree.php', array(
             'subjects' => $subjects,
-            'referenceId' => $referenceId,
-            'referenceSlug' => $list['slug'][$referenceId],
-            'referenceLabel' => $list['label'][$referenceId],
             'options' => $options,
         ));
 
@@ -195,13 +184,17 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
     /**
      * Get the list of references.
      *
+     * When the type is not element, a filter is added and the list of titles
+     * are returned.
+     *
      * @see Reference_IndexController::_getReferencesList()
-     * @param integer $referenceId
+     * @param array $slug
      * @return array
      */
-    protected function _getReferencesList($referenceId)
+    protected function _getReferencesList($slug)
     {
-        // A query allows quick access to all subjects (no need for elements).
+        $elementId = $slug['type'] == 'Element' ? $slug['id'] : $this->_DC_Title_id;
+
         $db = get_db();
         $elementTextsTable = $db->getTable('ElementText');
         $elementTextsAlias = $elementTextsTable->getTableAlias();
@@ -210,9 +203,13 @@ class Reference_View_Helper_Reference extends Zend_View_Helper_Abstract
             ->from(array(), array($elementTextsAlias . '.text'))
             ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
             ->where("element_texts.record_type = 'Item'")
-            ->where($elementTextsAlias . '.element_id = ' . (integer) $referenceId)
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
             ->group($elementTextsAlias . '.text')
             ->order($elementTextsAlias . '.text ASC' . " COLLATE 'utf8_unicode_ci'");
+
+        if ($slug['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slug['id']);
+        }
 
         $permissions = new Omeka_Db_Select_PublicPermissions('Items');
         $permissions->apply($select, 'items');

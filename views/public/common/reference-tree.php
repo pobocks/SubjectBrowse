@@ -1,6 +1,8 @@
 <?php
 if (count($subjects)):
     $queryType = get_option('reference_query_type') == 'contains' ? 'contains' : 'is+exactly';
+    // Dublin Core Subject is always 49.
+    $referenceId = 49;
 ?>
 <link href="<?php echo css_src('jquery-simple-folders'); ?>" media="all" rel="stylesheet" type="text/css" />
 <div id="reference-headings">

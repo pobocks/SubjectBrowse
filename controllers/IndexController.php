@@ -6,19 +6,27 @@
  */
 class Reference_IndexController extends Omeka_Controller_AbstractActionController
 {
+    protected $_DC_Title_id = 50;
+
     public function browseAction()
     {
-        $list = json_decode(get_option('reference_list_elements'), true);
-        if (empty($list['active'])) {
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        // Remove disabled slugs.
+        foreach ($slugs as $slug => $slugData) {
+            if (empty($slugData['active'])) {
+                unset($slugs[$slug]);
+            }
+        }
+        if (empty($slugs)) {
             throw new Omeka_Controller_Exception_404;
         }
+        $this->view->references = $slugs;
 
-        $references = array_combine(
-            array_intersect_key($list['slug'], $list['active']),
-            array_intersect_key($list['label'], $list['active'])
-        );
-
-        $this->view->references = $references;
+        $types = array();
+        foreach ($slugs as $slug => $slugData) {
+            $types[$slugData['type']] = true;
+        }
+        $this->view->types = $types;
     }
 
     /**
@@ -26,25 +34,19 @@ class Reference_IndexController extends Omeka_Controller_AbstractActionControlle
      */
     public function listAction()
     {
-        $list = json_decode(get_option('reference_list_elements'), true);
-        if (empty($list)) {
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        if (empty($slugs)) {
             $this->forward('browse', 'items', 'default');
         }
 
         $slug = $this->getParam('slug');
-        $referenceId = is_numeric($slug)
-            ? (integer) $slug
-            : array_search($slug, $list['slug']);
-        // Check if this slug is allowed.
-        if (empty($list['active'][$referenceId])) {
-            $this->forward('browse', 'index', 'reference');
+        if (!isset($slugs[$slug]) || empty($slugs[$slug]['active'])) {
+            throw new Omeka_Controller_Exception_404;
         }
 
-        $references = $this->_getReferencesList($referenceId);
-        $this->view->references = $references;
-        $this->view->referenceId = $referenceId;
-        $this->view->referenceSlug = $list['slug'][$referenceId];
-        $this->view->referenceLabel = $list['label'][$referenceId];
+        $this->view->slug = $slug;
+        $this->view->slugData = $slugs[$slug];
+        $this->view->references = $this->_getReferencesList($slugs[$slug]);
     }
 
     /**
@@ -62,13 +64,17 @@ class Reference_IndexController extends Omeka_Controller_AbstractActionControlle
     /**
      * Get the list of references.
      *
+     * When the type is not element, a filter is added and the list of titles
+     * are returned.
+     *
      * @see Reference_View_Helper_Reference::_getReferencesList()
-     * @param integer $referenceId
+     * @param array $slug
      * @return array
      */
-    protected function _getReferencesList($referenceId)
+    protected function _getReferencesList($slug)
     {
-        // A query allows quick access to all subjects (no need for elements).
+        $elementId = $slug['type'] == 'Element' ? $slug['id'] : $this->_DC_Title_id;
+
         $db = get_db();
         $elementTextsTable = $db->getTable('ElementText');
         $elementTextsAlias = $elementTextsTable->getTableAlias();
@@ -77,9 +83,13 @@ class Reference_IndexController extends Omeka_Controller_AbstractActionControlle
             ->from(array(), array($elementTextsAlias . '.text'))
             ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
             ->where("element_texts.record_type = 'Item'")
-            ->where($elementTextsAlias . '.element_id = ' . (integer) $referenceId)
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
             ->group($elementTextsAlias . '.text')
             ->order($elementTextsAlias . '.text ASC' . " COLLATE 'utf8_unicode_ci'");
+
+        if ($slug['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slug['id']);
+        }
 
         $permissions = new Omeka_Db_Select_PublicPermissions('Items');
         $permissions->apply($select, 'items');

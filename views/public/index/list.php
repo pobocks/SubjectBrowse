@@ -1,11 +1,11 @@
 <?php
-$pageTitle = __('Browse Items by "%s"', $referenceLabel);
+$pageTitle = __('Browse Items by "%s"', $slugData['label']);
 echo head(array(
     'title' => $pageTitle,
     'bodyclass' => 'reference browse list',
 )); ?>
 <div id="primary" class="reference">
-    <h1><?php echo __('Browse Items By "%s" (%d Headings)', $referenceLabel, count($references)); ?></h1>
+    <h1><?php echo __('Browse Items By "%s" (%d Headings)', $slugData['label'], count($references)); ?></h1>
     <nav class="items-nav navigation secondary-nav">
         <?php echo public_nav_items(); ?>
     </nav>
@@ -13,10 +13,11 @@ echo head(array(
     if (count($references)) :
         echo $this->reference($references, array(
             'mode' => 'list',
-            'slug' => $referenceSlug,
+            'slug' => $slug,
+            'slugData' => $slugData,
         ));
     else:
-        echo '<p>' . __('There is no references for "%s".', $referenceLabel) . '</p>';
+        echo '<p>' . __('There is no references for "%s".', $slugData['label']) . '</p>';
     endif;
     ?>
 </div>

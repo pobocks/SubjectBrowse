@@ -14,7 +14,7 @@
 <fieldset id="fieldset-reference-list"><legend><?php echo __('References Indexes'); ?></legend>
     <div class="field">
         <div>
-            <?php echo $this->formLabel('reference_list_elements', __('Display References')); ?>
+            <?php echo $this->formLabel('reference_slugs', __('Display References')); ?>
         </div>
         <div class="inputs">
             <p class="explanation">
@@ -24,7 +24,7 @@
             <table id="hide-elements-table">
                 <thead>
                     <tr>
-                        <th class="curator-monitor-boxes"><?php echo __('Element'); ?></th>
+                        <th class="curator-monitor-boxes"><?php echo __('Item Type / Element'); ?></th>
                         <th class="curator-monitor-boxes"><?php echo __('Display'); ?></th>
                         <th class="curator-monitor-boxes"><?php echo __('Slug'); ?></th>
                         <th class="curator-monitor-boxes"><?php echo __('Label'); ?></th>
@@ -32,36 +32,51 @@
                 </thead>
                 <tbody>
                 <?php
+                $current_type = null;
                 $current_element_set = null;
-                foreach ($elements as $element):
-                    if ($element->set_name != $current_element_set):
-                        $current_element_set = $element->set_name; ?>
+                foreach ($slugs as $slug => $slugData):
+                    $record = $tables[$slugData['type']]->find($slugData['id']);
+                    if (empty($record)) {
+                        continue;
+                    }
+                    $idKey = '[' . $slugData['type'] . '][' . $slugData['id'] . ']';
+                    if ($slugData['type'] !== $current_type):
+                        $current_type = $slugData['type'];
+                    ?>
                     <tr>
                         <th colspan="4">
-                            <strong><?php echo __($current_element_set); ?></strong>
+                            <strong><?php echo Inflector::humanize($current_type, 'all'); ?></strong>
                         </th>
                     </tr>
-                    <?php endif; ?>
+                    <?php endif;
+                    if ($current_type == 'Element'):
+                        if ($record->set_name != $current_element_set):
+                            $current_element_set = $record->set_name; ?>
                     <tr>
-                        <td><?php echo __($element->name); ?></td>
+                        <th colspan="4">
+                            <strong><?php echo $current_element_set; ?></strong>
+                        </th>
+                    </tr>
+                        <?php endif;
+                    endif; ?>
+                    <tr>
+                        <td><?php echo $record->name; ?></td>
                         <td class="reference-boxes">
                             <?php echo $this->formCheckbox(
-                                "reference_list_elements[active][{$element->id}]",
-                                '1', array(
-                                    'disableHidden' => true,
-                                    'checked' => isset($settings['active'][$element->id]),
-                                )
+                                'actives' . $idKey,
+                                true,
+                                array('checked' => (boolean) $slugData['active'])
                             ); ?>
                         </td>
                         <td class="reference-boxes">
                             <?php echo $this->formText(
-                                "reference_list_elements[slug][{$element->id}]",
-                                $settings['slug'][$element->id], null); ?>
+                                'slugs' . $idKey,
+                                $slug, null); ?>
                         </td>
                         <td class="reference-boxes">
                             <?php echo $this->formText(
-                                "reference_list_elements[label][{$element->id}]",
-                                $settings['label'][$element->id], null); ?>
+                                'labels' . $idKey,
+                                $slugData['label'], null); ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

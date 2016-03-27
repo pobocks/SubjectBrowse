@@ -8,22 +8,25 @@
  */
 class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
 {
+    // This is true in all installations of Omeka (forced).
+    protected $_DC_Title_id = 50;
+
     /**
      * Count the total of distinct element texts for an element.
      *
-     * @param Element|integer|string $element Element, element id or slug.
+     * @param string $slug
      * @return integer
      */
-    public function referenceCount($element)
+    public function referenceCount($slug)
     {
-        if (is_object($element)) {
-            $element = $element->id;
+        $slugs = json_decode(get_option('reference_slugs'), true) ?: array();
+        if (empty($slugs) || empty($slugs[$slug]['active'])) {
+            return;
         }
-        elseif (!is_numeric($element)) {
-            $list = json_decode(get_option('reference_list_elements'), true) ?: array('slug' => array());
-            $element = array_search($element, $list['slug']);
-        }
-        $referenceId = $element;
+
+        $slug = $slugs[$slug];
+
+        $elementId = $slug['type'] == 'Element' ? $slug['id'] : $this->_DC_Title_id;
 
         $db = get_db();
         $elementTextsTable = $db->getTable('ElementText');
@@ -33,8 +36,12 @@ class Reference_View_Helper_ReferenceCount extends Zend_View_Helper_Abstract
             ->from(array(), array($elementTextsAlias . '.text'))
             ->joinInner(array('items' => $db->Item), $elementTextsAlias . ".record_type = 'Item' AND items.id = $elementTextsAlias.record_id", array())
             ->where($elementTextsAlias . ".record_type = 'Item'")
-            ->where($elementTextsAlias . '.element_id = ' . (integer) $referenceId)
+            ->where($elementTextsAlias . '.element_id = ' . (integer) $elementId)
             ->group($elementTextsAlias . '.text');
+
+        if ($slug['type'] == 'ItemType') {
+            $select->where('items.item_type_id = ' . (integer) $slug['id']);
+        }
 
         $permissions = new Omeka_Db_Select_PublicPermissions('Items');
         $permissions->apply($select, 'items');
