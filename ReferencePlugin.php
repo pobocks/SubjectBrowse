@@ -3,10 +3,10 @@
  * Reference
  *
  * Allows to serve an alphabetized and a hierarchical page of links to searches
- * for all subjects of all items of an Omeka instance.
+ * for all item types and elements of all items of an Omeka instance.
  *
  * @copyright William Mayo 2011
- * @copyright Copyright Daniel Berthereau, 2014
+ * @copyright Copyright Daniel Berthereau, 2014-2016
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  * @package Reference
  */
