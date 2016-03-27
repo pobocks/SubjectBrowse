@@ -63,6 +63,7 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
     public function hookInitialize()
     {
         add_translation_source(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'languages');
+        add_shortcode('reference', array($this, 'shortcodeReference'));
         add_shortcode('subjects', array($this, 'shortcodeSubjects'));
     }
 
@@ -231,7 +232,20 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Shortcode for adding list or tree of subjects.
+     * Shortcode for adding list of references.
+     *
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
+    public function shortcodeReference($args, $view)
+    {
+        $args['mode'] = 'list';
+        return $this->_shortcode($args, $view);
+    }
+
+    /**
+     * Shortcode for adding tree of subjects.
      *
      * @param array $args
      * @param Omeka_View $view
@@ -239,9 +253,23 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function shortcodeSubjects($args, $view)
     {
+        $args['mode'] = 'tree';
+        return $this->_shortcode($args, $view);
+    }
+
+    /**
+     * Helper for shortcodes.
+     *
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
+    protected function _shortcode($args, $view)
+    {
         $args['view'] = $view;
-        $subjects = isset($args['subjects'])
-            ? array_filter(array_map('trim', explode(',', $args['subjects'])))
+        $referencesKey = $args['mode'] == 'tree' ? 'subjects' : 'references';
+        $references = isset($args[$referencesKey])
+            ? array_filter(array_map('trim', explode(',', $args[$referencesKey])))
             : array();
         foreach ($args as &$arg) {
             // Set true values.
@@ -253,6 +281,6 @@ class ReferencePlugin extends Omeka_Plugin_AbstractPlugin
                 $arg = false;
             }
         }
-        return $view->reference($subjects, $args);
+        return $view->reference($references, $args);
     }
 }

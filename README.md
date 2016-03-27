@@ -76,20 +76,20 @@ All arguments are optional and the default ones are set in the config page, but
 they can be overridden in the theme. So a simple `echo $this->reference();`
 is enough. For list, the default is the "Dublin Core : Subject".
 
-The helper shortcode "subjects" can be used too, in particular in exhibits and
-in simple pages:
+The shortcodes "reference" and "subjects" can be used too, in particular in
+exhibits and in simple pages:
 
 ```
+[reference]
+[reference slug=date skiplinks=true headings=true raw=false]
 [subjects]
-[subjects mode=list]
-[subjects mode=list slug=subject skiplinks=true headings=true raw=false]
-[subjects mode=tree]
-[subjects mode=tree expanded=true raw=false]
+[subjects expanded=true raw=false]
 ```
 
 Arguments that are not set use the default values.
 
-The argument "subjects" allows to display only a delimited list of subjects.
+The arguments "references" or "subjects" allow to display only a delimited list
+references or subjects.
 
 
 Warning
