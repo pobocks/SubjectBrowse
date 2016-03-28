@@ -1,0 +1,35 @@
+.reference-pagination.pagination {
+    display: inline-block;
+    float: none;
+    margin: 12px 0;
+    padding: 0 0 1em;
+    height: auto;
+    width: auto;
+}
+.reference-pagination ul.pagination_list {
+    height: auto;
+    margin: auto;
+    padding: 0;
+}
+.reference-pagination li.pagination_range {
+    height: auto;
+    line-height: auto;
+}
+.reference-pagination li.pagination_range a,
+.reference-pagination li.pagination_range span {
+    display: inline-block;
+    margin-right: 0px;
+    padding: 0.375em 9px;
+    vertical-align: top;
+}
+.reference-pagination li.pagination_range a {
+    border: 1px solid #000000;
+    text-decoration: none;
+}
+.reference-pagination li.pagination_range span {
+    border: 1px solid transparent;
+}
+.reference-pagination li.pagination_range a:hover {
+    background-color: #CCCCCC;
+    text-decoration: none;
+}
